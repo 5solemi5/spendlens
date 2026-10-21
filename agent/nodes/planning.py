@@ -70,6 +70,8 @@ async def plan_node(state: AgentState, deps: Deps) -> dict:
     if month is None and not parsed["all_period"] and any(i in NEEDS_MONTH for i in intents) \
             and not parsed["merchant"]:
         month = REF_MONTH   # "이상한 결제 있어?"처럼 달이 없으면 기준 달(이번 달)
+    if "budget_change" in intents:
+        month = REF_MONTH   # 예산 변경 제안에는 '이번 달' 사용액을 함께 보여 준다
     missing = [m for m in months + ([month] if month else []) if m not in available]
 
     base = {"intents": intents, "months": months, "month": month, "category": parsed["category"],
