@@ -6,7 +6,7 @@ from langsmith import traceable
 
 from ..deps import Deps
 from ..query import is_spending_question, parse_query
-from .state import AgentState, add_cost
+from .state import AgentState, add_usage
 
 REFUSE_MESSAGE = ("투자·대출·주식·코인 같은 금융 상품에 대한 조언은 드리지 않아요. 저는 카드 지출을 분석하는 "
                   "가계부 비서예요. 대신 이런 걸 도와드릴 수 있어요: 월별·카테고리별 지출, 지난달과 비교, "
@@ -26,7 +26,7 @@ async def route_node(state: AgentState, deps: Deps) -> dict:
         return {"route": "spending", "parsed": parsed,
                 "events": events + [{"type": "RouteDecided", "route": "spending", "by": "code"}]}
     result, usage = await asyncio.to_thread(deps.fast_llm.route, state["query"])
-    return {"route": result["route"], "parsed": parsed, "cost_usd": add_cost(state, usage),
+    return {"route": result["route"], "parsed": parsed, **add_usage(state, usage),
             "events": events + [{"type": "RouteDecided", "route": result["route"], "by": "llm"}]}
 
 
@@ -36,7 +36,7 @@ async def chat_answer_node(state: AgentState, deps: Deps) -> dict:
     reply, usage = await deps.fast_llm.chat(
         state["query"], state.get("history", []),
         on_token=lambda piece: writer({"type": "AnswerToken", "delta": piece}))
-    return {"final": reply, "last_prompt": usage.get("prompt"), "cost_usd": add_cost(state, usage),
+    return {"final": reply, "last_prompt": usage.get("prompt"), **add_usage(state, usage),
             "events": state["events"] + [{"type": "Finalize", "pipeline": "chat"}]}
 
 

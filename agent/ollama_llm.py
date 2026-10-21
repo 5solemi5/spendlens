@@ -23,10 +23,8 @@ ROUTE_SCHEMA = {"type": "object", "properties": {"route": {"type": "string", "en
                 "required": ["route"]}
 PLAN_SCHEMA = {"type": "object", "properties": {"intents": {"type": "array", "items": {"type": "string", "enum": INTENTS}}},
                "required": ["intents"]}
-CLASSIFY_SCHEMA = {"type": "object", "properties": {"items": {"type": "array", "items": {
-    "type": "object", "properties": {"merchant": {"type": "string"},
-                                     "category": {"type": "string", "enum": CATEGORIES}},
-    "required": ["merchant", "category"]}}}, "required": ["items"]}
+CLASSIFY_SCHEMA = {"type": "object", "properties": {"category": {"type": "string", "enum": CATEGORIES}},
+                   "required": ["category"]}
 
 WRITE_SYSTEM = ("당신은 개인 가계부 비서다. '수집된 사실'만 근거로 사용자 질문에 한국어로 답하라.\n"
                 "- 금액·건수·비율은 수집된 사실에 적힌 값을 그대로 인용하라. 직접 더하거나 빼거나 반올림하지 마라.\n"
@@ -89,6 +87,31 @@ class OllamaLLM:
         return "".join(chunks), usage
 
 
+class _Classifier:
+    """가맹점 분류 — fast·quality 둘 다 가진다. 어느 모델로 분류할지는 Deps.classifier가 정한다.
+    (실측: 0.6b는 '하이디라오 강남점'(훠궈 식당)을 쇼핑으로 분류 → 식비·쇼핑 합계가 함께 틀렸다)"""
+
+    @traceable(run_type="llm", name="ollama.classify")
+    def classify(self, merchants: list[str]) -> tuple[dict, dict]:
+        """가맹점마다 1번씩 묻고, 답은 카테고리 하나(enum)만 받는다.
+        처음엔 목록을 한 번에 넣고 [{merchant, category}]로 받았는데 두 가지로 깨졌다(eval/classify_eval.py):
+          - 0.6b: 빈 목록을 돌려줌 → 15곳 모두 '기타'
+          - 8b  : 분류는 맞혔지만 이름을 '블루보ottle 성수'처럼 바꿔 적어 매칭 실패 → '기타'
+        이름을 모델이 다시 적지 않게 하면 두 문제가 함께 사라진다."""
+        system = ("당신은 카드 가맹점 분류기다. 가맹점 이름 하나를 보고 카테고리 하나를 골라라: "
+                  f"{', '.join(CATEGORIES)}. 음식점·술집=식비, 커피전문점=카페, 마트·편의점=장보기, "
+                  "생활용품·의류·온라인몰=쇼핑, 택시·대리운전·차량 공유=교통, 영상·음악 구독=구독, "
+                  "운동·영화·공연·서점=문화, 병원·약국=의료. 확실하지 않으면 기타.")
+        labels, total = {}, {"model": self.name, "tokens": 0, "prompt_tokens": 0, "usd": 0.0}
+        for merchant in merchants:
+            content, usage = self._chat(system, merchant, schema=CLASSIFY_SCHEMA)
+            category = _json(content).get("category")
+            labels[merchant] = category if category in CATEGORIES else "기타"
+            for k in ("tokens", "prompt_tokens", "usd"):
+                total[k] = round(total[k] + usage[k], 6)
+        return labels, total
+
+
 def _json(content: str) -> dict:
     try:
         out = json.loads(content)
@@ -97,7 +120,7 @@ def _json(content: str) -> dict:
         return {}
 
 
-class OllamaFastLLM(OllamaLLM):
+class OllamaFastLLM(_Classifier, OllamaLLM):
     @traceable(run_type="llm", name="ollama_fast.route")
     def route(self, query: str) -> tuple[dict, dict]:
         system = ("당신은 가계부 비서의 라우터다. 사용자의 지출·카드 내역·예산·구독·절약에 관한 질문이면 "
@@ -116,17 +139,6 @@ class OllamaFastLLM(OllamaLLM):
         intents = [i for i in _json(content).get("intents", []) if i in INTENTS]
         return {"intents": list(dict.fromkeys(intents))}, usage
 
-    @traceable(run_type="llm", name="ollama_fast.classify")
-    def classify(self, merchants: list[str]) -> tuple[dict, dict]:
-        system = ("당신은 카드 가맹점 분류기다. 각 가맹점 이름을 보고 카테고리 하나를 골라라: "
-                  f"{', '.join(CATEGORIES)}. 음식점=식비, 커피전문점=카페, 생활용품점=쇼핑, "
-                  "차량 공유=교통, 운동·공연·서점=문화. 확실하지 않으면 기타.")
-        content, usage = self._chat(system, "\n".join(merchants), schema=CLASSIFY_SCHEMA)
-        found = {i.get("merchant"): i.get("category") for i in _json(content).get("items", [])
-                 if isinstance(i, dict)}
-        # 모델이 빠뜨리거나 이름을 바꿔 적은 가맹점은 '기타' — 분류 대상은 코드가 정한 목록 그대로
-        return {m: found.get(m) if found.get(m) in CATEGORIES else "기타" for m in merchants}, usage
-
     @traceable(run_type="llm", name="ollama_fast.chat")
     async def chat(self, query: str, history: list[dict], on_token=None) -> tuple[str, dict]:
         system = ("당신은 개인 가계부 비서 SpendLens다. 한두 문장의 한국어로 친절하게 답하라. "
@@ -140,7 +152,7 @@ class OllamaFastLLM(OllamaLLM):
         return content.strip(), usage
 
 
-class OllamaQualityLLM(OllamaLLM):
+class OllamaQualityLLM(_Classifier, OllamaLLM):
     @traceable(run_type="llm", name="ollama_quality.write")
     async def write(self, query: str, facts_text: str, attempt: int, feedback: str | None,
                     on_token=None) -> tuple[str, dict]:

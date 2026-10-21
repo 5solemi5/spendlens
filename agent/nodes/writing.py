@@ -5,7 +5,7 @@ from langsmith import traceable
 from ..deps import Deps
 from ..facts import format_facts
 from ..grounding import check_grounding
-from .state import AgentState, add_cost
+from .state import AgentState, add_usage
 
 MAX_VALIDATION_ATTEMPTS = 3
 
@@ -19,7 +19,7 @@ async def write_node(state: AgentState, deps: Deps) -> dict:
         state["query"], facts_text, attempt, state.get("validation_feedback"),
         on_token=lambda piece: writer({"type": "AnswerToken", "attempt": attempt, "delta": piece}))
     return {"draft": draft, "facts_text": facts_text, "last_prompt": usage.get("prompt"),
-            "cost_usd": add_cost(state, usage),
+            **add_usage(state, usage),
             "events": state["events"] + [{"type": "DraftWritten", "attempt": attempt, "length": len(draft)}]}
 
 

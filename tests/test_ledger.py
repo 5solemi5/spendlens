@@ -17,7 +17,8 @@ def test_months_and_grand_total_match_csv():
 def test_planted_anomalies_found_only_in_september():
     found = {(a["type"], a["merchant"], a["amount"]) for a in L.detect_anomalies("2026-09")["anomalies"]}
     assert found == {("중복 결제 의심", "배달의민족", 27500), ("평소보다 큰 결제", "무신사", 389000),
-                     ("평소보다 큰 결제", "AMAZON.COM", 152300), ("해외 결제", "AMAZON.COM", 152300)}
+                     ("평소보다 큰 결제 + 해외 결제", "AMAZON.COM", 152300)}   # 같은 결제는 한 항목
+    assert L.detect_anomalies("2026-09")["count"] == 3
     assert L.detect_anomalies("2026-07")["count"] == 0 and L.detect_anomalies("2026-08")["count"] == 0
 
 

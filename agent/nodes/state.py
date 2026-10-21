@@ -29,8 +29,11 @@ class AgentState(TypedDict, total=False):
     final: str
     last_prompt: str
     cost_usd: float
+    prompt_tokens: int         # 이번 요청에서 LLM에 넣은 프롬프트 토큰 합 (Before/After 비교용)
     events: list[dict]
 
 
-def add_cost(state: AgentState, usage: dict) -> float:
-    return round(state.get("cost_usd", 0.0) + usage["usd"], 6)
+def add_usage(state: AgentState, usage: dict) -> dict:
+    """이번 LLM 호출의 비용·프롬프트 토큰을 누적한 상태 갱신값. 노드는 return {..., **add_usage(state, usage)}."""
+    return {"cost_usd": round(state.get("cost_usd", 0.0) + usage["usd"], 6),
+            "prompt_tokens": state.get("prompt_tokens", 0) + usage.get("prompt_tokens", 0)}

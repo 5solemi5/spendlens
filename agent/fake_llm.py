@@ -22,6 +22,11 @@ class FakeLLM:
         return {"model": self.name, "tokens": tokens, "prompt_tokens": len(prompt) // 4,
                 "usd": round(tokens / 1000 * self.usd_per_1k, 6)}
 
+    @traceable(run_type="llm", name="fake.classify")
+    def classify(self, merchants: list[str]) -> tuple[dict, dict]:
+        out = {m: next((c for key, c in FAKE_CATEGORIES.items() if key in m), "기타") for m in merchants}
+        return out, self._usage(str(merchants), str(out))
+
 
 class FastLLM(FakeLLM):
     @traceable(run_type="llm", name="fake_fast.route")
@@ -33,11 +38,6 @@ class FastLLM(FakeLLM):
     @traceable(run_type="llm", name="fake_fast.plan")
     def plan(self, query: str, procedure: str) -> tuple[dict, dict]:
         return {"intents": ["total"]}, self._usage(query + procedure, "total")
-
-    @traceable(run_type="llm", name="fake_fast.classify")
-    def classify(self, merchants: list[str]) -> tuple[dict, dict]:
-        out = {m: next((c for key, c in FAKE_CATEGORIES.items() if key in m), "기타") for m in merchants}
-        return out, self._usage(str(merchants), str(out))
 
     @traceable(run_type="llm", name="fake_fast.chat")
     async def chat(self, query: str, history: list[dict], on_token=None) -> tuple[str, dict]:

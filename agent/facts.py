@@ -38,7 +38,7 @@ def _transactions(args: dict, r: dict) -> str:
 def _anomalies(args: dict, r: dict) -> str:
     if not r["anomalies"]:
         return f"- {r['month']} 이상 결제: 없음"
-    return "\n".join(f"- {r['month']} 이상 결제[{a['type']}]: {a['date']} {a['merchant']} {won(a['amount'])} — {a['reason']}"
+    return f"- {r['month']} 이상 결제 {r['count']}건\n" + "\n".join(f"- {r['month']} 이상 결제[{a['type']}]: {a['date']} {a['merchant']} {won(a['amount'])} — {a['reason']}"
                      for a in r["anomalies"])
 
 

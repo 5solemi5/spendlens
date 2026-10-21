@@ -5,7 +5,7 @@ from langsmith import traceable
 
 from ..deps import Deps
 from ..query import REF_MONTH
-from .state import AgentState, add_cost
+from .state import AgentState, add_usage
 
 # 의도 → 필요한 MCP Tool. args의 "{month}" 등은 plan_node가 실제 값으로 채운다.
 NEEDS_MONTH = {"total", "count", "anomaly", "budget", "advice", "transactions", "overview"}
@@ -50,7 +50,7 @@ def build_calls(intents: list[str], months: list[str], month: str | None,
 async def plan_node(state: AgentState, deps: Deps) -> dict:
     parsed = state["parsed"]
     available = deps.catalog.get("months", [])
-    cost = state.get("cost_usd", 0.0)
+    usage_update = {}
     events = list(state["events"])
 
     intents = list(parsed["intents"])
@@ -60,7 +60,7 @@ async def plan_node(state: AgentState, deps: Deps) -> dict:
                                               {"question": state["query"], "month": REF_MONTH})
         result, usage = await asyncio.to_thread(deps.fast_llm.plan, state["query"], procedure)
         intents = result["intents"] or ["overview"]
-        cost = add_cost(state, usage)
+        usage_update = add_usage(state, usage)
         events.append({"type": "IntentsFilled", "by": "llm", "intents": intents})
 
     months = list(parsed["months"])
@@ -75,7 +75,7 @@ async def plan_node(state: AgentState, deps: Deps) -> dict:
     missing = [m for m in months + ([month] if month else []) if m not in available]
 
     base = {"intents": intents, "months": months, "month": month, "category": parsed["category"],
-            "merchant": parsed["merchant"], "budget_change": parsed["budget_change"], "cost_usd": cost}
+            "merchant": parsed["merchant"], "budget_change": parsed["budget_change"], **usage_update}
     if missing:
         events.append({"type": "PlanCreated", "intents": intents, "missing_months": missing})
         return {**base, "missing_months": list(dict.fromkeys(missing)), "calls": [], "events": events}

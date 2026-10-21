@@ -11,4 +11,5 @@ class Deps:
     mcp: Any               # MCP 클라이언트 (계산 엔진 Tool, 가이드 Resource)
     session_store: Any     # 대화 이력 (SQLite)
     hitl: bool = True      # 예산 변경 같은 저장 조치를 사람 승인 후에만 실행
+    classifier: str = "quality"   # 가맹점 분류 모델: "quality"(기본) | "fast" — 분류는 가맹점당 1번이라 큰 모델도 부담이 작다
     catalog: dict = field(default_factory=dict)   # data_catalog Tool 결과 (months, merchants, categories)

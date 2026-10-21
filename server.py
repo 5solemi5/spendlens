@@ -66,6 +66,7 @@ async def lifespan(app: FastAPI):
     backend, (fast, quality) = _build_llms()
     deps = Deps(fast_llm=fast, quality_llm=quality, mcp=mcp, session_store=SqliteSessionStore(),
                 hitl=os.environ.get("HITL_APPROVAL", "1") == "1",
+                classifier=os.environ.get("CLASSIFIER_MODEL", "quality"),
                 catalog=await mcp.call_tool("data_catalog", {}))   # 달·가맹점 목록은 시작할 때 1번
     app.state.backend, app.state.deps = backend, deps
     app.state.graph = build_graph(deps)
@@ -101,7 +102,8 @@ def _metadata(result: dict) -> dict:
             "grounding_issues": result.get("grounding_issues", []),
             "approval": result.get("approval"), "memory": result.get("memory"),
             "facts": result.get("facts_text", ""),        # 채점·디버깅용 근거 텍스트
-            "cost_usd": result.get("cost_usd", 0.0), "llm_backend": app.state.backend}
+            "cost_usd": result.get("cost_usd", 0.0), "prompt_tokens": result.get("prompt_tokens", 0),
+            "llm_backend": app.state.backend}
 
 
 def _config(run_key: str) -> dict:

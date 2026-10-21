@@ -180,8 +180,18 @@ def detect_anomalies(month: str) -> dict:
         if r["overseas"]:
             found.append({"type": "해외 결제", "merchant": r["merchant"], "amount": r["amount"],
                           "date": r["date"], "ids": [r["id"]], "reason": "해외 가맹점 결제"})
-    found.sort(key=lambda a: a["date"])
-    return {"month": month, "count": len(found), "anomalies": found}
+    # 같은 결제가 여러 기준에 걸리면(예: AMAZON — 큰 결제 + 해외 결제) 한 항목으로 묶는다.
+    # 처음엔 기준마다 따로 냈더니 '이상 결제 4건'이 되어, 모델이 맞게 쓴 "3건"이 근거 없는 숫자로 반려됐다.
+    merged: dict[tuple, dict] = {}
+    for a in found:
+        key = tuple(a["ids"])
+        if key in merged:
+            merged[key]["type"] += " + " + a["type"]
+            merged[key]["reason"] += " / " + a["reason"]
+        else:
+            merged[key] = dict(a)
+    items = sorted(merged.values(), key=lambda a: a["date"])
+    return {"month": month, "count": len(items), "anomalies": items}
 
 
 def find_subscriptions() -> dict:
