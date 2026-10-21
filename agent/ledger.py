@@ -80,6 +80,13 @@ def months() -> list[str]:
     return sorted({r["month"] for r in load_transactions()})
 
 
+def data_catalog() -> dict:
+    """에이전트가 질문을 해석할 때 쓰는 목록: 데이터가 있는 달, 가맹점 이름, 카테고리."""
+    rows = load_transactions()
+    return {"months": sorted({r["month"] for r in rows}), "merchants": sorted({r["merchant"] for r in rows}),
+            "categories": CATEGORIES}
+
+
 # ---------------------------------------------------------------- 조회·합계
 
 def _filter(rows, month=None, category=None, merchant=None):

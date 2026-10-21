@@ -3,7 +3,7 @@
 FastAPI 백엔드(server.py)가 lifespan에서 이 파일을 subprocess(stdio)로 1회 띄워 재사용한다.
 에이전트는 숫자를 직접 계산하지 않고 반드시 이 Tool들을 거친다 → 같은 질문이면 항상 같은 숫자.
 
-- Tool     : 조회(spending_summary, category_breakdown, compare_months, list_transactions,
+- Tool     : 조회(data_catalog, spending_summary, category_breakdown, compare_months, list_transactions,
              detect_anomalies, find_subscriptions, budget_status, list_uncategorized)
              쓰기(set_merchant_category — 분류 저장, set_budget — 예산 변경: 에이전트는 사람 승인 후에만 호출)
 - Resource : guide://saving/{topic}  절약·대응 가이드 문서
@@ -20,6 +20,12 @@ from agent import ledger   # noqa: E402
 
 mcp = FastMCP(name="spendlens-ledger")
 GUIDE_DIR = ledger.DATA_DIR / "guides"
+
+
+@mcp.tool()
+def data_catalog() -> dict:
+    """데이터가 있는 달, 가맹점 이름, 카테고리 목록 — 에이전트가 시작할 때 1번 읽는다."""
+    return ledger.data_catalog()
 
 
 @mcp.tool()
