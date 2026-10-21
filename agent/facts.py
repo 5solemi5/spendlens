@@ -55,7 +55,14 @@ def _subscriptions(args: dict, r: dict) -> str:
             note.append(f"{r['latest_month']}에는 결제 없음")
         extra = f", {', '.join(note)}" if note else ""
         return f"{s['merchant']}({s['category']}) {won(s['amount'])} 매달 {s['day']}일{extra}"
-    return (f"- 정기 결제 {r['count']}개, 월 합계 {won(r['monthly_total'])}: "
+    # 카테고리별 소계를 함께 적는다 — "구독 서비스 얼마?"에 '정기 결제 전체(통신 포함)'와 '구독 카테고리만'
+    # 중 무엇을 답할지 모델이 고를 근거. (gpt-4o가 61,680원, 측정 기준은 116,680원이라 어긋났던 것)
+    by_cat: dict[str, list[int]] = {}
+    for s in r["subscriptions"]:
+        if s["active"]:
+            by_cat.setdefault(s["category"], []).append(s["amount"])
+    parts = " + ".join(f"{c} {len(v)}개 {won(sum(v))}" for c, v in by_cat.items())
+    return (f"- 정기 결제 {r['count']}개, 월 합계 {won(r['monthly_total'])} (= {parts}): "
             + "; ".join(one(s) for s in r["subscriptions"]))
 
 

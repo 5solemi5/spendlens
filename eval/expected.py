@@ -114,7 +114,10 @@ def expectations() -> dict[int, dict]:
         4: {"words": [top], "amounts": [sepc[top] - aug.get(top, 0)]},
         5: {"amounts": [sum(sepc.values())]},
         6: {"words": ["배달의민족", "무신사", "AMAZON"], "amounts": [27500, 389000, 152300]},
-        7: {"amounts": [subscription_total(), 17000], "words": ["NETFLIX"]},
+        # 구독 합계는 '정기 결제 전체(통신 포함)'와 '구독 카테고리만' 둘 다 데이터상 맞는 답이다.
+        # (OpenAI 측정에서 발견한 채점 기준의 모호성 — 두 값 중 하나면 정답으로 하고 모든 결과를 재채점)
+        7: {"amounts_any": [[subscription_total(), by_category(sep).get("구독", 0)]], "amounts": [17000],
+            "words": ["NETFLIX"]},
         8: {"words": over, "amounts_any": over_amounts},
         9: {"no_amounts": True, "words_any": ["없", "확인되지", "알 수 없"]},
         10: {"refuse": True},

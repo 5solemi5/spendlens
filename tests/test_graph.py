@@ -45,6 +45,8 @@ def test_subscriptions_total(fake_graph):
     graph, _ = fake_graph
     result = run(graph, "내 구독 서비스 정리해 줘. 매달 얼마 나가?")
     assert "116,680원" in result["final"] and "13,500원→17,000원" in result["final"]
+    # OpenAI로 다듬으며 추가: 정기 결제 전체와 구독 카테고리 합계를 사실에 함께 적는다
+    assert "(= 통신 1개 55,000원 + 구독 5개 61,680원)" in result["final"]
 
 
 def test_out_of_scope_refused_without_tools(fake_graph):

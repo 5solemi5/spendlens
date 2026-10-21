@@ -1,0 +1,1244 @@
+{
+ "label": "after_local_polished",
+ "url": "http://127.0.0.1:8200",
+ "summary": {
+  "queries": 12,
+  "accuracy": "12/12",
+  "answers_with_invented_amounts": 0,
+  "false_action_claims": 0,
+  "total_s": 69.7,
+  "avg_s": 5.8,
+  "prompt_tokens": 7765,
+  "cost_usd": 0.044401
+ },
+ "rows": [
+  {
+   "id": 1,
+   "query": "9월 식비 얼마 썼어?",
+   "kind": "합계",
+   "elapsed_s": 7.7,
+   "cost_usd": 0.00767,
+   "prompt_tokens": 1455,
+   "approval": false,
+   "budget_after": {
+    "식비": 400000,
+    "카페": 80000,
+    "장보기": 150000,
+    "교통": 120000,
+    "쇼핑": 150000,
+    "구독": 60000,
+    "통신": 60000,
+    "문화": 80000,
+    "의료": 30000
+   },
+   "reply": "9월 식비는 378,900원 썼어요. 23건으로 평균 16,474원이에요.\n\n※ 규칙에 없던 가맹점을 자동 분류했어요: 다이소 신촌점→쇼핑, 블루보틀 성수→카페, 쏘카→교통, 클라이밍파크 신림→문화, 하이디라오 강남점→식비",
+   "metadata": {
+    "route": "spending",
+    "intents": [
+     "total"
+    ],
+    "month": "2026-09",
+    "category": "식비",
+    "merchant": null,
+    "tools": [
+     "spending_summary"
+    ],
+    "classified": {
+     "다이소 신촌점": "쇼핑",
+     "블루보틀 성수": "카페",
+     "쏘카": "교통",
+     "클라이밍파크 신림": "문화",
+     "하이디라오 강남점": "식비"
+    },
+    "guides": [],
+    "validation_attempts": 1,
+    "grounding_issues": [],
+    "approval": null,
+    "memory": {
+     "messages": 0,
+     "summarized": 0,
+     "updated": false,
+     "sent": 0
+    },
+    "facts": "- 2026-09 식비 지출: 합계 378,900원, 23건, 평균 16,474원\n- 이번에 새로 분류한 가맹점: 다이소 신촌점→쇼핑, 블루보틀 성수→카페, 쏘카→교통, 클라이밍파크 신림→문화, 하이디라오 강남점→식비",
+    "cost_usd": 0.00767,
+    "prompt_tokens": 1455,
+    "llm_backend": "ollama"
+   },
+   "events": [
+    {
+     "type": "RouteDecided",
+     "route": "spending",
+     "by": "code"
+    },
+    {
+     "type": "PlanCreated",
+     "intents": [
+      "total"
+     ],
+     "month": "2026-09",
+     "calls": [
+      "spending_summary"
+     ]
+    },
+    {
+     "type": "MerchantsClassified",
+     "labels": {
+      "다이소 신촌점": "쇼핑",
+      "블루보틀 성수": "카페",
+      "쏘카": "교통",
+      "클라이밍파크 신림": "문화",
+      "하이디라오 강남점": "식비"
+     }
+    },
+    {
+     "type": "ToolCalled",
+     "tool": "spending_summary",
+     "args": {
+      "month": "2026-09",
+      "category": "식비"
+     },
+     "retries": 0
+    },
+    {
+     "type": "AdviceSkipped"
+    },
+    {
+     "type": "DraftWritten",
+     "attempt": 1,
+     "length": 41
+    },
+    {
+     "type": "Validation",
+     "attempt": 1,
+     "verdict": "합격"
+    },
+    {
+     "type": "Finalize",
+     "pipeline": "spending"
+    }
+   ],
+   "ok": true,
+   "checks": [
+    true
+   ],
+   "invented": [],
+   "false_action": false
+  },
+  {
+   "id": 2,
+   "query": "9월에 카페 몇 번 갔어?",
+   "kind": "건수",
+   "elapsed_s": 2.2,
+   "cost_usd": 0.00219,
+   "prompt_tokens": 389,
+   "approval": false,
+   "budget_after": {
+    "식비": 400000,
+    "카페": 80000,
+    "장보기": 150000,
+    "교통": 120000,
+    "쇼핑": 150000,
+    "구독": 60000,
+    "통신": 60000,
+    "문화": 80000,
+    "의료": 30000
+   },
+   "reply": "9월에 카페에 18번 갔어요. 총 78,400원을 지출했고, 평균 4,356원을 썼어요.",
+   "metadata": {
+    "route": "spending",
+    "intents": [
+     "count"
+    ],
+    "month": "2026-09",
+    "category": "카페",
+    "merchant": null,
+    "tools": [
+     "spending_summary"
+    ],
+    "classified": {},
+    "guides": [],
+    "validation_attempts": 1,
+    "grounding_issues": [],
+    "approval": null,
+    "memory": {
+     "messages": 0,
+     "summarized": 0,
+     "updated": false,
+     "sent": 0
+    },
+    "facts": "- 2026-09 카페 지출: 합계 78,400원, 18건, 평균 4,356원",
+    "cost_usd": 0.00219,
+    "prompt_tokens": 389,
+    "llm_backend": "ollama"
+   },
+   "events": [
+    {
+     "type": "RouteDecided",
+     "route": "spending",
+     "by": "code"
+    },
+    {
+     "type": "PlanCreated",
+     "intents": [
+      "count"
+     ],
+     "month": "2026-09",
+     "calls": [
+      "spending_summary"
+     ]
+    },
+    {
+     "type": "CategorizeSkipped"
+    },
+    {
+     "type": "ToolCalled",
+     "tool": "spending_summary",
+     "args": {
+      "month": "2026-09",
+      "category": "카페"
+     },
+     "retries": 0
+    },
+    {
+     "type": "AdviceSkipped"
+    },
+    {
+     "type": "DraftWritten",
+     "attempt": 1,
+     "length": 49
+    },
+    {
+     "type": "Validation",
+     "attempt": 1,
+     "verdict": "합격"
+    },
+    {
+     "type": "Finalize",
+     "pipeline": "spending"
+    }
+   ],
+   "ok": true,
+   "checks": [
+    true
+   ],
+   "invented": [],
+   "false_action": false
+  },
+  {
+   "id": 3,
+   "query": "스타벅스에 3달 동안 얼마 썼어?",
+   "kind": "가맹점 합계",
+   "elapsed_s": 2.3,
+   "cost_usd": 0.002205,
+   "prompt_tokens": 391,
+   "approval": false,
+   "budget_after": {
+    "식비": 400000,
+    "카페": 80000,
+    "장보기": 150000,
+    "교통": 120000,
+    "쇼핑": 150000,
+    "구독": 60000,
+    "통신": 60000,
+    "문화": 80000,
+    "의료": 30000
+   },
+   "reply": "3달간 스타벅스에 총 108,500원 썼어요. 19건이며, 평균 5,711원씩 지출했어요.",
+   "metadata": {
+    "route": "spending",
+    "intents": [
+     "total"
+    ],
+    "month": null,
+    "category": "카페",
+    "merchant": "스타벅스",
+    "tools": [
+     "spending_summary"
+    ],
+    "classified": {},
+    "guides": [],
+    "validation_attempts": 1,
+    "grounding_issues": [],
+    "approval": null,
+    "memory": {
+     "messages": 0,
+     "summarized": 0,
+     "updated": false,
+     "sent": 0
+    },
+    "facts": "- 전체 카페 스타벅스 지출: 합계 108,500원, 19건, 평균 5,711원",
+    "cost_usd": 0.002205,
+    "prompt_tokens": 391,
+    "llm_backend": "ollama"
+   },
+   "events": [
+    {
+     "type": "RouteDecided",
+     "route": "spending",
+     "by": "code"
+    },
+    {
+     "type": "PlanCreated",
+     "intents": [
+      "total"
+     ],
+     "month": null,
+     "calls": [
+      "spending_summary"
+     ]
+    },
+    {
+     "type": "CategorizeSkipped"
+    },
+    {
+     "type": "ToolCalled",
+     "tool": "spending_summary",
+     "args": {
+      "category": "카페",
+      "merchant": "스타벅스"
+     },
+     "retries": 0
+    },
+    {
+     "type": "AdviceSkipped"
+    },
+    {
+     "type": "DraftWritten",
+     "attempt": 1,
+     "length": 50
+    },
+    {
+     "type": "Validation",
+     "attempt": 1,
+     "verdict": "합격"
+    },
+    {
+     "type": "Finalize",
+     "pipeline": "spending"
+    }
+   ],
+   "ok": true,
+   "checks": [
+    true
+   ],
+   "invented": [],
+   "false_action": false
+  },
+  {
+   "id": 4,
+   "query": "8월보다 9월에 가장 많이 늘어난 카테고리는 뭐고 얼마나 늘었어?",
+   "kind": "월 비교",
+   "elapsed_s": 5.9,
+   "cost_usd": 0.00533,
+   "prompt_tokens": 959,
+   "approval": false,
+   "budget_after": {
+    "식비": 400000,
+    "카페": 80000,
+    "장보기": 150000,
+    "교통": 120000,
+    "쇼핑": 150000,
+    "구독": 60000,
+    "통신": 60000,
+    "문화": 80000,
+    "의료": 30000
+   },
+   "reply": "8월 대비 9월에 가장 많이 늘어난 카테고리는 쇼핑입니다. 657,100원 증가했어요. 1. 쇼핑: +657,100원(+670.5%) 2. 식비: +174,900원(+85.7%) 3. 교통: +56,900원(+84.9%)",
+   "metadata": {
+    "route": "spending",
+    "intents": [
+     "compare",
+     "total"
+    ],
+    "month": "2026-09",
+    "category": null,
+    "merchant": null,
+    "tools": [
+     "compare_months",
+     "spending_summary",
+     "category_breakdown"
+    ],
+    "classified": {},
+    "guides": [],
+    "validation_attempts": 1,
+    "grounding_issues": [],
+    "approval": null,
+    "memory": {
+     "messages": 0,
+     "summarized": 0,
+     "updated": false,
+     "sent": 0
+    },
+    "facts": "- 2026-08→2026-09 카테고리별 증감(증가액 큰 순): 쇼핑 98,000원→755,100원 (+657,100원, +670.5%); 식비 204,000원→378,900원 (+174,900원, +85.7%); 장보기 142,900원→218,300원 (+75,400원, +52.8%); 교통 67,000원→123,900원 (+56,900원, +84.9%); 문화 87,400원→131,500원 (+44,100원, +50.5%); 카페 70,800원→78,400원 (+7,600원, +10.7%); 구독 58,180원→61,680원 (+3,500원, +6.0%); 통신 55,000원→55,000원 (+0원, +0.0%); 의료 14,900원→8,500원 (-6,400원, -43.0%) / 전체 798,180원→1,811,280원 (+1,013,100원)\n- 2026-09 전체 지출: 합계 1,811,280원, 106건, 평균 17,088원\n- 2026-09 카테고리별 지출(큰 순): 쇼핑 755,100원(9건), 식비 378,900원(23건), 장보기 218,300원(14건), 문화 131,500원(6건), 교통 123,900원(29건), 카페 78,400원(18건), 구독 61,680원(5건), 통신 55,000원(1건), 의료 8,500원(1건) / 전체 합계 1,811,280원",
+    "cost_usd": 0.00533,
+    "prompt_tokens": 959,
+    "llm_backend": "ollama"
+   },
+   "events": [
+    {
+     "type": "RouteDecided",
+     "route": "spending",
+     "by": "code"
+    },
+    {
+     "type": "PlanCreated",
+     "intents": [
+      "compare",
+      "total"
+     ],
+     "month": "2026-09",
+     "calls": [
+      "compare_months",
+      "spending_summary",
+      "category_breakdown"
+     ]
+    },
+    {
+     "type": "CategorizeSkipped"
+    },
+    {
+     "type": "ToolCalled",
+     "tool": "compare_months",
+     "args": {
+      "month_a": "2026-08",
+      "month_b": "2026-09"
+     },
+     "retries": 0
+    },
+    {
+     "type": "ToolCalled",
+     "tool": "spending_summary",
+     "args": {
+      "month": "2026-09"
+     },
+     "retries": 0
+    },
+    {
+     "type": "ToolCalled",
+     "tool": "category_breakdown",
+     "args": {
+      "month": "2026-09"
+     },
+     "retries": 0
+    },
+    {
+     "type": "AdviceSkipped"
+    },
+    {
+     "type": "DraftWritten",
+     "attempt": 1,
+     "length": 123
+    },
+    {
+     "type": "Validation",
+     "attempt": 1,
+     "verdict": "합격"
+    },
+    {
+     "type": "Finalize",
+     "pipeline": "spending"
+    }
+   ],
+   "ok": true,
+   "checks": [
+    true,
+    true
+   ],
+   "invented": [],
+   "false_action": false
+  },
+  {
+   "id": 5,
+   "query": "9월 전체 지출 합계는?",
+   "kind": "합계",
+   "elapsed_s": 11.4,
+   "cost_usd": 0.007285,
+   "prompt_tokens": 1206,
+   "approval": false,
+   "budget_after": {
+    "식비": 400000,
+    "카페": 80000,
+    "장보기": 150000,
+    "교통": 120000,
+    "쇼핑": 150000,
+    "구독": 60000,
+    "통신": 60000,
+    "문화": 80000,
+    "의료": 30000
+   },
+   "reply": "9월 전체 지출 합계는 1,811,280원입니다.  \n1. 쇼핑 755,100원  \n2. 식비 378,900원  \n3. 장보기 218,300원  \n4. 문화 131,500원  \n5. 교통 123,900원  \n6. 카페 78,400원  \n7. 구독 61,680원  \n8. 통신 55,000원  \n9. 의료 8,500원",
+   "metadata": {
+    "route": "spending",
+    "intents": [
+     "total"
+    ],
+    "month": "2026-09",
+    "category": null,
+    "merchant": null,
+    "tools": [
+     "spending_summary",
+     "category_breakdown"
+    ],
+    "classified": {},
+    "guides": [],
+    "validation_attempts": 2,
+    "grounding_issues": [],
+    "approval": null,
+    "memory": {
+     "messages": 0,
+     "summarized": 0,
+     "updated": false,
+     "sent": 0
+    },
+    "facts": "- 2026-09 전체 지출: 합계 1,811,280원, 106건, 평균 17,088원\n- 2026-09 카테고리별 지출(큰 순): 쇼핑 755,100원(9건), 식비 378,900원(23건), 장보기 218,300원(14건), 문화 131,500원(6건), 교통 123,900원(29건), 카페 78,400원(18건), 구독 61,680원(5건), 통신 55,000원(1건), 의료 8,500원(1건) / 전체 합계 1,811,280원",
+    "cost_usd": 0.007285,
+    "prompt_tokens": 1206,
+    "llm_backend": "ollama"
+   },
+   "events": [
+    {
+     "type": "RouteDecided",
+     "route": "spending",
+     "by": "code"
+    },
+    {
+     "type": "PlanCreated",
+     "intents": [
+      "total"
+     ],
+     "month": "2026-09",
+     "calls": [
+      "spending_summary",
+      "category_breakdown"
+     ]
+    },
+    {
+     "type": "CategorizeSkipped"
+    },
+    {
+     "type": "ToolCalled",
+     "tool": "spending_summary",
+     "args": {
+      "month": "2026-09"
+     },
+     "retries": 0
+    },
+    {
+     "type": "ToolCalled",
+     "tool": "category_breakdown",
+     "args": {
+      "month": "2026-09"
+     },
+     "retries": 0
+    },
+    {
+     "type": "AdviceSkipped"
+    },
+    {
+     "type": "DraftWritten",
+     "attempt": 1,
+     "length": 132
+    },
+    {
+     "type": "Validation",
+     "attempt": 1,
+     "verdict": "불합격",
+     "grounding_issues": [
+      "수집된 사실에 없는 숫자가 있습니다(597,200원). 금액·비율·건수는 수집된 값을 그대로 인용하고, 직접 더하거나 계산하지 마세요."
+     ]
+    },
+    {
+     "type": "DraftWritten",
+     "attempt": 2,
+     "length": 176
+    },
+    {
+     "type": "Validation",
+     "attempt": 2,
+     "verdict": "합격"
+    },
+    {
+     "type": "Finalize",
+     "pipeline": "spending"
+    }
+   ],
+   "ok": true,
+   "checks": [
+    true
+   ],
+   "invented": [],
+   "false_action": false
+  },
+  {
+   "id": 6,
+   "query": "9월에 이상한 결제 있어?",
+   "kind": "이상 결제",
+   "elapsed_s": 13.3,
+   "cost_usd": 0.00643,
+   "prompt_tokens": 1012,
+   "approval": false,
+   "budget_after": {
+    "식비": 400000,
+    "카페": 80000,
+    "장보기": 150000,
+    "교통": 120000,
+    "쇼핑": 150000,
+    "구독": 60000,
+    "통신": 60000,
+    "문화": 80000,
+    "의료": 30000
+   },
+   "reply": "9월에 이상한 결제는 3건 있어요.  \n1. 9월 14일 배달의민족 27,500원 — 같은 가맹점·같은 금액이 2분 간격으로 2번 결제돼요.  \n2. 9월 22일 무신사 389,000원 — 쇼핑 결제 중앙값 34,300원의 11.3배로 큰 결제예요.  \n3. 9월 27일 AMAZON.COM 152,300원 — 쇼핑 결제 중앙값 34,300원의 4.4배 / 해외 결제예요.  \n\n**절약 방법**  \n1. 평소보다 큰 결제는 환불·반품 기한을 확인하고, 아니라면 카드사에 신고하세요.  \n2. 해외 결제는 카드 앱에서 차단 설정을 해두면 안전해요.  \n3. 같은 가맹점·같은 금액이 반복 결제되면 중복 결제일 수 있으니 결제 취소를 요청하세요.",
+   "metadata": {
+    "route": "spending",
+    "intents": [
+     "anomaly"
+    ],
+    "month": "2026-09",
+    "category": null,
+    "merchant": null,
+    "tools": [
+     "detect_anomalies"
+    ],
+    "classified": {},
+    "guides": [
+     "이상결제",
+     "쇼핑",
+     "식비"
+    ],
+    "validation_attempts": 1,
+    "grounding_issues": [],
+    "approval": null,
+    "memory": {
+     "messages": 0,
+     "summarized": 0,
+     "updated": false,
+     "sent": 0
+    },
+    "facts": "- 2026-09 이상 결제 3건\n- 2026-09 이상 결제[중복 결제 의심]: 2026-09-14 배달의민족 27,500원 — 같은 가맹점·같은 금액이 2분 간격으로 2번\n- 2026-09 이상 결제[평소보다 큰 결제]: 2026-09-22 무신사 389,000원 — 쇼핑 결제 중앙값 34,300원의 11.3배\n- 2026-09 이상 결제[평소보다 큰 결제 + 해외 결제]: 2026-09-27 AMAZON.COM 152,300원 — 쇼핑 결제 중앙값 34,300원의 4.4배 / 해외 가맹점 결제\n- 절약 가이드[이상결제]: 평소보다 큰 결제가 본인 결제라면 환불·반품 기한을 확인하고, 아니라면 카드사에 바로 신고한다. / 해외 결제를 쓰지 않는다면 카드 앱에서 해외 결제 차단을 켜 둔다. / 같은 가맹점·같은 금액이 몇 분 간격으로 두 번 결제됐다면 중복 결제일 수 있다. 가맹점이나 앱 고객센터에 결제 취소를 요청하고, 처리되지 않으면 카드사에 이의 제기한다.\n- 절약 가이드[쇼핑]: 평소보다 큰 결제는 반품·환불 기한 안에 다시 점검한다. 충동구매였다면 기한 내 반품이 가장 큰 절약이다. / 해외 직구는 관세·배송비·환율 수수료가 붙는다. 국내 최저가와 총액으로 비교한다. / 새벽·심야 결제는 충동구매 비율이 높다. 밤 늦은 시간 쇼핑 앱 알림을 끈다.\n- 절약 가이드[식비]: 같은 가맹점 결제가 짧은 간격으로 두 번 찍혔다면 주문 실수나 중복 결제일 수 있으니 결제 내역부터 확인한다. / 배달 앱 주문은 배달비·최소주문금액 때문에 같은 메뉴도 포장보다 비싸다. 주 2회 이상 배달이면 포장 주문이나 직접 조리로 바꾸는 것부터 시작한다. / 외식은 횟수보다 1회 금액이 큰 것이 문제인 경우가 많다. 고액 외식은 월 1~2회로 미리 정해 둔다.",
+    "cost_usd": 0.00643,
+    "prompt_tokens": 1012,
+    "llm_backend": "ollama"
+   },
+   "events": [
+    {
+     "type": "RouteDecided",
+     "route": "spending",
+     "by": "code"
+    },
+    {
+     "type": "PlanCreated",
+     "intents": [
+      "anomaly"
+     ],
+     "month": "2026-09",
+     "calls": [
+      "detect_anomalies"
+     ]
+    },
+    {
+     "type": "CategorizeSkipped"
+    },
+    {
+     "type": "ToolCalled",
+     "tool": "detect_anomalies",
+     "args": {
+      "month": "2026-09"
+     },
+     "retries": 0
+    },
+    {
+     "type": "GuidesRetrieved",
+     "topics": [
+      "이상결제",
+      "쇼핑",
+      "식비"
+     ],
+     "hints": [
+      "이상결제",
+      "중복 결제 의심",
+      "평소보다 큰 결제",
+      "평소보다 큰 결제 + 해외 결제"
+     ]
+    },
+    {
+     "type": "DraftWritten",
+     "attempt": 1,
+     "length": 360
+    },
+    {
+     "type": "Validation",
+     "attempt": 1,
+     "verdict": "합격"
+    },
+    {
+     "type": "Finalize",
+     "pipeline": "spending"
+    }
+   ],
+   "ok": true,
+   "checks": [
+    true,
+    true,
+    true,
+    true,
+    true,
+    true
+   ],
+   "invented": [],
+   "false_action": false
+  },
+  {
+   "id": 7,
+   "query": "내 구독 서비스 정리해 줘. 매달 얼마 나가?",
+   "kind": "구독",
+   "elapsed_s": 8.3,
+   "cost_usd": 0.00619,
+   "prompt_tokens": 1079,
+   "approval": false,
+   "budget_after": {
+    "식비": 400000,
+    "카페": 80000,
+    "장보기": 150000,
+    "교통": 120000,
+    "쇼핑": 150000,
+    "구독": 60000,
+    "통신": 60000,
+    "문화": 80000,
+    "의료": 30000
+   },
+   "reply": "매달 구독 서비스로 61,680원이 나갑니다.  \n1. **NETFLIX**는 17,000원(2026-09 인상 전 13,500원)  \n2. **YOUTUBE PREMIUM** 14,900원  \n3. **SPOTIFY** 11,990원  \n4. **밀리의서재** 9,900원  \n5. **쿠팡와우 멤버십** 7,890원  \n\n구독 서비스 중 일부는 요금이 올랐으니, 실제 사용 여부를 점검해 보세요.",
+   "metadata": {
+    "route": "spending",
+    "intents": [
+     "subscription",
+     "total"
+    ],
+    "month": "2026-09",
+    "category": null,
+    "merchant": null,
+    "tools": [
+     "find_subscriptions",
+     "spending_summary",
+     "category_breakdown"
+    ],
+    "classified": {},
+    "guides": [
+     "구독",
+     "문화",
+     "통신"
+    ],
+    "validation_attempts": 1,
+    "grounding_issues": [],
+    "approval": null,
+    "memory": {
+     "messages": 0,
+     "summarized": 0,
+     "updated": false,
+     "sent": 0
+    },
+    "facts": "- 정기 결제 6개, 월 합계 116,680원 (= 통신 1개 55,000원 + 구독 5개 61,680원): SKT 통신요금(통신) 55,000원 매달 25일; NETFLIX(구독) 17,000원 매달 5일, 2026-09에 13,500원→17,000원 인상; YOUTUBE PREMIUM(구독) 14,900원 매달 12일; SPOTIFY(구독) 11,990원 매달 20일; 밀리의서재(구독) 9,900원 매달 15일, 2026-08부터 시작; 쿠팡와우 멤버십(구독) 7,890원 매달 1일\n- 2026-09 전체 지출: 합계 1,811,280원, 106건, 평균 17,088원\n- 2026-09 카테고리별 지출(큰 순): 쇼핑 755,100원(9건), 식비 378,900원(23건), 장보기 218,300원(14건), 문화 131,500원(6건), 교통 123,900원(29건), 카페 78,400원(18건), 구독 61,680원(5건), 통신 55,000원(1건), 의료 8,500원(1건) / 전체 합계 1,811,280원\n- 절약 가이드[구독]: 매달 자동으로 나가는 정기 결제를 한 화면에 모아 보고, 지난 한 달 동안 실제로 쓴 서비스만 남긴다. / 구독 해지는 다음 결제일 전에 해야 다음 달 요금이 나가지 않는다. / 영상·음악 구독이 여러 개면 한 번에 하나만 유지하고 번갈아 구독하는 방법이 있다.\n- 절약 가이드[문화]: 책은 도서관과 전자책 구독 중 실제 읽는 양에 맞는 쪽을 고른다. / 운동 시설은 1회권을 반복 결제하면 월 정액권보다 비싸질 수 있다. 한 달 이용 횟수와 정액권 가격을 비교한다. / 영화는 통신사·카드 할인과 조조 시간대를 이용한다.\n- 절약 가이드[통신]: 매달 쓰는 데이터 양을 확인하고, 실제 사용량보다 큰 요금제라면 낮은 요금제나 알뜰폰으로 바꾼다. / 약정 할인·결합 할인이 적용되고 있는지 확인한다.",
+    "cost_usd": 0.00619,
+    "prompt_tokens": 1079,
+    "llm_backend": "ollama"
+   },
+   "events": [
+    {
+     "type": "RouteDecided",
+     "route": "spending",
+     "by": "code"
+    },
+    {
+     "type": "PlanCreated",
+     "intents": [
+      "subscription",
+      "total"
+     ],
+     "month": "2026-09",
+     "calls": [
+      "find_subscriptions",
+      "spending_summary",
+      "category_breakdown"
+     ]
+    },
+    {
+     "type": "CategorizeSkipped"
+    },
+    {
+     "type": "ToolCalled",
+     "tool": "find_subscriptions",
+     "args": {},
+     "retries": 0
+    },
+    {
+     "type": "ToolCalled",
+     "tool": "spending_summary",
+     "args": {
+      "month": "2026-09"
+     },
+     "retries": 0
+    },
+    {
+     "type": "ToolCalled",
+     "tool": "category_breakdown",
+     "args": {
+      "month": "2026-09"
+     },
+     "retries": 0
+    },
+    {
+     "type": "GuidesRetrieved",
+     "topics": [
+      "구독",
+      "문화",
+      "통신"
+     ],
+     "hints": [
+      "구독"
+     ]
+    },
+    {
+     "type": "DraftWritten",
+     "attempt": 1,
+     "length": 223
+    },
+    {
+     "type": "Validation",
+     "attempt": 1,
+     "verdict": "합격"
+    },
+    {
+     "type": "Finalize",
+     "pipeline": "spending"
+    }
+   ],
+   "ok": true,
+   "checks": [
+    true,
+    true,
+    true
+   ],
+   "invented": [],
+   "false_action": false
+  },
+  {
+   "id": 8,
+   "query": "9월에 예산 넘은 카테고리 알려줘",
+   "kind": "예산",
+   "elapsed_s": 17.2,
+   "cost_usd": 0.00706,
+   "prompt_tokens": 1051,
+   "approval": false,
+   "budget_after": {
+    "식비": 400000,
+    "카페": 80000,
+    "장보기": 150000,
+    "교통": 120000,
+    "쇼핑": 150000,
+    "구독": 60000,
+    "통신": 60000,
+    "문화": 80000,
+    "의료": 30000
+   },
+   "reply": "9월에 예산을 넘은 카테고리는 쇼핑, 문화, 장보기, 교통, 구독입니다.  \n1. 쇼핑: 755,100원 (예산 150,000원, 503.4%, 605,100원 초과)  \n2. 문화: 131,500원 (예산 80,000원, 164.4%, 51,500원 초과)  \n3. 장보기: 218,300원 (예산 150,000원, 145.5%, 68,300원 초과)  \n4. 교통: 123,900원 (예산 120,000원, 103.2%, 3,900원 초과)  \n5. 구독: 61,680원 (예산 60,000원, 102.8%, 1,680원 초과)  \n\n**절약 방법**  \n1. 장보기는 대형마트에서 미리 목록을 정해 가면 계획치를 넘지 않도록 할 수 있습니다.  \n2. 쇼핑은 다음 달 예산에서 초과분을 미리 빼두는 방식으로 조절해 보세요.  \n3. 문화비는 실제 이용 횟수에 맞는 구독이나 할인 혜택을 활용해 보세요.",
+   "metadata": {
+    "route": "spending",
+    "intents": [
+     "budget"
+    ],
+    "month": "2026-09",
+    "category": null,
+    "merchant": null,
+    "tools": [
+     "budget_status"
+    ],
+    "classified": {},
+    "guides": [
+     "장보기",
+     "쇼핑",
+     "문화"
+    ],
+    "validation_attempts": 1,
+    "grounding_issues": [],
+    "approval": null,
+    "memory": {
+     "messages": 0,
+     "summarized": 0,
+     "updated": false,
+     "sent": 0
+    },
+    "facts": "- 2026-09 예산 초과: 쇼핑 755,100원 / 예산 150,000원 (503.4%, 605,100원 초과), 문화 131,500원 / 예산 80,000원 (164.4%, 51,500원 초과), 장보기 218,300원 / 예산 150,000원 (145.5%, 68,300원 초과), 교통 123,900원 / 예산 120,000원 (103.2%, 3,900원 초과), 구독 61,680원 / 예산 60,000원 (102.8%, 1,680원 초과)\n- 2026-09 예산 이내: 카페 78,400원 / 80,000원 (98.0%), 식비 378,900원 / 400,000원 (94.7%), 통신 55,000원 / 60,000원 (91.7%), 의료 8,500원 / 30,000원 (28.3%)\n- 절약 가이드[장보기]: 대형마트는 장보기 목록을 미리 쓰고 가면 계획에 없던 구매가 줄어든다. / 편의점 소액 결제가 잦으면 월 합계가 대형마트 장보기보다 커질 수 있다. 편의점 결제 횟수를 먼저 본다. / 1+1·묶음 할인은 다 쓰지 못하면 오히려 손해다. 소비 기한 안에 쓸 양만 산다.\n- 절약 가이드[쇼핑]: 쇼핑 예산을 넘었다면 다음 달 쇼핑 예산에서 초과분을 미리 빼 두는 방식으로 균형을 맞춘다. / 새벽·심야 결제는 충동구매 비율이 높다. 밤 늦은 시간 쇼핑 앱 알림을 끈다. / 평소보다 큰 결제는 반품·환불 기한 안에 다시 점검한다. 충동구매였다면 기한 내 반품이 가장 큰 절약이다.\n- 절약 가이드[문화]: 책은 도서관과 전자책 구독 중 실제 읽는 양에 맞는 쪽을 고른다. / 운동 시설은 1회권을 반복 결제하면 월 정액권보다 비싸질 수 있다. 한 달 이용 횟수와 정액권 가격을 비교한다. / 영화는 통신사·카드 할인과 조조 시간대를 이용한다.",
+    "cost_usd": 0.00706,
+    "prompt_tokens": 1051,
+    "llm_backend": "ollama"
+   },
+   "events": [
+    {
+     "type": "RouteDecided",
+     "route": "spending",
+     "by": "code"
+    },
+    {
+     "type": "PlanCreated",
+     "intents": [
+      "budget"
+     ],
+     "month": "2026-09",
+     "calls": [
+      "budget_status"
+     ]
+    },
+    {
+     "type": "CategorizeSkipped"
+    },
+    {
+     "type": "ToolCalled",
+     "tool": "budget_status",
+     "args": {
+      "month": "2026-09"
+     },
+     "retries": 0
+    },
+    {
+     "type": "GuidesRetrieved",
+     "topics": [
+      "장보기",
+      "쇼핑",
+      "문화"
+     ],
+     "hints": [
+      "쇼핑",
+      "문화",
+      "장보기",
+      "교통",
+      "구독"
+     ]
+    },
+    {
+     "type": "DraftWritten",
+     "attempt": 1,
+     "length": 451
+    },
+    {
+     "type": "Validation",
+     "attempt": 1,
+     "verdict": "합격"
+    },
+    {
+     "type": "Finalize",
+     "pipeline": "spending"
+    }
+   ],
+   "ok": true,
+   "checks": [
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true
+   ],
+   "invented": [],
+   "false_action": false
+  },
+  {
+   "id": 9,
+   "query": "10월 지출은 얼마야?",
+   "kind": "없는 기간",
+   "elapsed_s": 0.0,
+   "cost_usd": 0.0,
+   "prompt_tokens": 0,
+   "approval": false,
+   "budget_after": {
+    "식비": 400000,
+    "카페": 80000,
+    "장보기": 150000,
+    "교통": 120000,
+    "쇼핑": 150000,
+    "구독": 60000,
+    "통신": 60000,
+    "문화": 80000,
+    "의료": 30000
+   },
+   "reply": "2026-10 카드 내역은 데이터에 없어서 답할 수 없어요. 조회할 수 있는 기간: 2026-07 ~ 2026-09.",
+   "metadata": {
+    "route": "spending",
+    "intents": [
+     "total"
+    ],
+    "month": "2026-10",
+    "category": null,
+    "merchant": null,
+    "tools": [],
+    "classified": {},
+    "guides": [],
+    "validation_attempts": 0,
+    "grounding_issues": [],
+    "approval": null,
+    "memory": {
+     "messages": 0,
+     "summarized": 0,
+     "updated": false,
+     "sent": 0
+    },
+    "facts": "",
+    "cost_usd": 0.0,
+    "prompt_tokens": 0,
+    "llm_backend": "ollama"
+   },
+   "events": [
+    {
+     "type": "RouteDecided",
+     "route": "spending",
+     "by": "code"
+    },
+    {
+     "type": "PlanCreated",
+     "intents": [
+      "total"
+     ],
+     "missing_months": [
+      "2026-10"
+     ]
+    },
+    {
+     "type": "Finalize",
+     "pipeline": "no-data"
+    }
+   ],
+   "ok": true,
+   "checks": [
+    true,
+    true
+   ],
+   "invented": [],
+   "false_action": false
+  },
+  {
+   "id": 10,
+   "query": "비트코인 사도 될까?",
+   "kind": "범위 밖",
+   "elapsed_s": 0.0,
+   "cost_usd": 0.0,
+   "prompt_tokens": 0,
+   "approval": false,
+   "budget_after": {
+    "식비": 400000,
+    "카페": 80000,
+    "장보기": 150000,
+    "교통": 120000,
+    "쇼핑": 150000,
+    "구독": 60000,
+    "통신": 60000,
+    "문화": 80000,
+    "의료": 30000
+   },
+   "reply": "투자·대출·주식·코인 같은 금융 상품에 대한 조언은 드리지 않아요. 저는 카드 지출을 분석하는 가계부 비서예요. 대신 이런 걸 도와드릴 수 있어요: 월별·카테고리별 지출, 지난달과 비교, 이상 결제, 구독 정리, 예산 대비 현황.",
+   "metadata": {
+    "route": "refuse",
+    "intents": [],
+    "month": null,
+    "category": null,
+    "merchant": null,
+    "tools": [],
+    "classified": {},
+    "guides": [],
+    "validation_attempts": 0,
+    "grounding_issues": [],
+    "approval": null,
+    "memory": {
+     "messages": 0,
+     "summarized": 0,
+     "updated": false,
+     "sent": 0
+    },
+    "facts": "",
+    "cost_usd": 0.0,
+    "prompt_tokens": 0,
+    "llm_backend": "ollama"
+   },
+   "events": [
+    {
+     "type": "RouteDecided",
+     "route": "refuse",
+     "by": "code"
+    },
+    {
+     "type": "Finalize",
+     "pipeline": "refuse"
+    }
+   ],
+   "ok": true,
+   "checks": [
+    true
+   ],
+   "invented": [],
+   "false_action": false
+  },
+  {
+   "id": 11,
+   "query": "안녕, 너는 누구야?",
+   "kind": "잡담",
+   "elapsed_s": 1.4,
+   "cost_usd": 4.1e-05,
+   "prompt_tokens": 223,
+   "approval": false,
+   "budget_after": {
+    "식비": 400000,
+    "카페": 80000,
+    "장보기": 150000,
+    "교통": 120000,
+    "쇼핑": 150000,
+    "구독": 60000,
+    "통신": 60000,
+    "문화": 80000,
+    "의료": 30000
+   },
+   "reply": "안녕하세요! 저는 SpendLens입니다. 저는 사용자의 지출을 관리하고 예산을 조정하는 비서입니다. 어떤 지출이나 예산을 물어볼 수 있어요?",
+   "metadata": {
+    "route": "chat",
+    "intents": [],
+    "month": null,
+    "category": null,
+    "merchant": null,
+    "tools": [],
+    "classified": {},
+    "guides": [],
+    "validation_attempts": 0,
+    "grounding_issues": [],
+    "approval": null,
+    "memory": {
+     "messages": 0,
+     "summarized": 0,
+     "updated": false,
+     "sent": 0
+    },
+    "facts": "",
+    "cost_usd": 4.1e-05,
+    "prompt_tokens": 223,
+    "llm_backend": "ollama"
+   },
+   "events": [
+    {
+     "type": "RouteDecided",
+     "route": "chat",
+     "by": "llm"
+    },
+    {
+     "type": "Finalize",
+     "pipeline": "chat"
+    }
+   ],
+   "ok": true,
+   "checks": [
+    true
+   ],
+   "invented": [],
+   "false_action": false
+  },
+  {
+   "id": 12,
+   "query": "식비 예산 50만원으로 바꿔줘",
+   "kind": "예산 변경",
+   "elapsed_s": 0.0,
+   "cost_usd": 0.0,
+   "prompt_tokens": 0,
+   "approval": true,
+   "budget_after": {
+    "식비": 500000,
+    "카페": 80000,
+    "장보기": 150000,
+    "교통": 120000,
+    "쇼핑": 150000,
+    "구독": 60000,
+    "통신": 60000,
+    "문화": 80000,
+    "의료": 30000
+   },
+   "reply": "식비 월 예산을 400,000원에서 500,000원으로 바꾸려고 합니다. 2026-09 식비 지출은 378,900원입니다.\n\n✅ 승인되어 식비 예산을 500,000원으로 바꿨습니다. (메모: bench 자동 승인)",
+   "metadata": {
+    "route": "spending",
+    "intents": [
+     "budget_change"
+    ],
+    "month": "2026-09",
+    "category": "식비",
+    "merchant": null,
+    "tools": [
+     "budget_status"
+    ],
+    "classified": {},
+    "guides": [],
+    "validation_attempts": 0,
+    "grounding_issues": [],
+    "approval": {
+     "category": "식비",
+     "before": 400000,
+     "after": 500000,
+     "approved": true
+    },
+    "memory": null,
+    "facts": "",
+    "cost_usd": 0.0,
+    "prompt_tokens": 0,
+    "llm_backend": "ollama"
+   },
+   "events": [
+    {
+     "type": "RouteDecided",
+     "route": "spending",
+     "by": "code"
+    },
+    {
+     "type": "PlanCreated",
+     "intents": [
+      "budget_change"
+     ],
+     "month": "2026-09",
+     "calls": [
+      "budget_status"
+     ]
+    },
+    {
+     "type": "CategorizeSkipped"
+    },
+    {
+     "type": "ToolCalled",
+     "tool": "budget_status",
+     "args": {
+      "month": "2026-09"
+     },
+     "retries": 0
+    },
+    {
+     "type": "ChangeProposed",
+     "category": "식비",
+     "amount": 500000,
+     "before": 400000
+    },
+    {
+     "type": "ApprovalDecided",
+     "approved": true,
+     "actions": [
+      "예산 변경"
+     ]
+    },
+    {
+     "type": "Finalize",
+     "pipeline": "spending"
+    }
+   ],
+   "ok": true,
+   "checks": [
+    true
+   ],
+   "invented": [],
+   "false_action": false
+  }
+ ]
+}

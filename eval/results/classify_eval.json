@@ -20,7 +20,19 @@
   "wrong": {
    "왓챠": "문화 (정답 구독)"
   },
-  "seconds": 6.9,
+  "seconds": 6.8,
   "tokens": 3138
+ },
+ "openai gpt-4o-mini": {
+  "accuracy": "15/15",
+  "wrong": {},
+  "seconds": 11.8,
+  "tokens": 3885
+ },
+ "openai gpt-4o": {
+  "accuracy": "15/15",
+  "wrong": {},
+  "seconds": 12.1,
+  "tokens": 3883
  }
 }

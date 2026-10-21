@@ -6,6 +6,7 @@
 사용법: python eval/classify_eval.py
 """
 import json
+import os
 import sys
 import time
 from pathlib import Path
@@ -27,8 +28,15 @@ def main():
     truth = {**expected.TRUE_LABELS, **EXTRA}
     merchants = list(truth)
     out = {}
-    for name, llm in [("fast qwen3:0.6b", OllamaFastLLM("qwen3:0.6b", 0.00015)),
-                      ("quality qwen3:8b", OllamaQualityLLM("qwen3:8b", 0.005))]:
+    models = [("fast qwen3:0.6b", OllamaFastLLM("qwen3:0.6b", 0.00015)),
+              ("quality qwen3:8b", OllamaQualityLLM("qwen3:8b", 0.005))]
+    from dotenv import load_dotenv
+    load_dotenv(HERE.parent / ".env")
+    if os.environ.get("OPENAI_API_KEY"):   # 키가 있으면 OpenAI도 같은 15곳으로 (분류 프롬프트·후처리는 동일)
+        from agent.openai_llm import OpenAIFastLLM, OpenAIQualityLLM
+        models += [("openai gpt-4o-mini", OpenAIFastLLM("gpt-4o-mini", 0.00015)),
+                   ("openai gpt-4o", OpenAIQualityLLM("gpt-4o", 0.005))]
+    for name, llm in models:
         t0 = time.perf_counter()
         labels, usage = llm.classify(merchants)
         wrong = {m: f"{labels[m]} (정답 {truth[m]})" for m in merchants if labels[m] != truth[m]}

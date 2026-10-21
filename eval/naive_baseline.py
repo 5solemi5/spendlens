@@ -28,7 +28,8 @@ SYSTEM = ("당신은 개인 가계부 비서다. 아래 카드 내역(CSV)과 �
 
 def main():
     ap = argparse.ArgumentParser()
-    ap.add_argument("--model", default="qwen3:8b")
+    ap.add_argument("--backend", default="ollama", choices=["ollama", "openai"])
+    ap.add_argument("--model", default=None, help="기본: ollama=qwen3:8b, openai=gpt-4o-mini")
     ap.add_argument("--think", action="store_true", help="qwen3 thinking 켜기(느리지만 계산이 나아지는지 확인용)")
     ap.add_argument("--label", default="before_naive")
     ap.add_argument("--ids", help="일부 질문만 (예: 1,2,5,6) — thinking 모드처럼 느릴 때")
@@ -36,7 +37,15 @@ def main():
 
     csv_text = (HERE.parent / "data" / "transactions.csv").read_text(encoding="utf-8")
     budget = json.dumps(expected.budget(), ensure_ascii=False)
-    llm = OllamaLLM(args.model, usd_per_1k_tokens=0.005, think=args.think, num_ctx=16384)
+    if args.backend == "openai":   # 같은 방식(CSV 통째로)을 OpenAI 모델로 — 키는 .env의 OPENAI_API_KEY
+        from dotenv import load_dotenv
+        load_dotenv(HERE.parent / ".env")
+        from agent.openai_llm import OpenAILLM
+        args.model = args.model or "gpt-4o-mini"
+        llm = OpenAILLM(args.model, usd_per_1k_tokens=0.005)
+    else:
+        args.model = args.model or "qwen3:8b"
+        llm = OllamaLLM(args.model, usd_per_1k_tokens=0.005, think=args.think, num_ctx=16384)
     exps, truth = expected.expectations(), expected.all_true_numbers()
     rows = []
     ids = {int(i) for i in args.ids.split(",")} if args.ids else None
