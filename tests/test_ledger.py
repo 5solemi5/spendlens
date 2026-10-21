@@ -65,3 +65,15 @@ def test_merchant_filter_is_case_insensitive_substring():
     assert L.spending_summary(merchant="netflix")["count"] == 3
     assert L.spending_summary(merchant="스타벅스") == {"month": "전체", "category": None, "merchant": "스타벅스",
                                                       "total": 108500, "count": 19, "average": 5711}
+
+
+def test_review_fixes(tmp_path):
+    assert L.categorize("CU 신촌점") == "장보기" and L.categorize("CUCKOO MALL") == L.UNCATEGORIZED
+    listed = L.list_transactions("2026-09", limit=3)
+    assert listed["shown"] == 3 and listed["count"] == L.spending_summary("2026-09")["count"]
+
+
+def test_guide_resource_rejects_paths_outside_folder():
+    import mcp_server
+    assert "Not Found" in mcp_server.saving_guide("../../README")
+    assert mcp_server.saving_guide("구독").startswith("# 절약 가이드: 구독")

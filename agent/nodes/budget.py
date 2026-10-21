@@ -19,7 +19,7 @@ async def propose_change_node(state: AgentState, deps: Deps) -> dict:
     item = next((i for i in status["items"] if i["category"] == bc["category"]), None)
     before = item["budget"] if item else None
     spent = f" {status['month']} {bc['category']} 지출은 {won(item['spent'])}입니다." if item else ""
-    draft = (f"{bc['category']} 월 예산을 {won(before) if before else '(설정 없음)'}에서 "
+    draft = (f"{bc['category']} 월 예산을 {won(before) if before is not None else '(설정 없음)'}에서 "
              f"{won(bc['amount'])}으로 바꾸려고 합니다.{spent}")
     return {"draft": draft, "approval": {"category": bc["category"], "before": before, "after": bc["amount"]},
             "events": state["events"] + [{"type": "ChangeProposed", **bc, "before": before}]}
@@ -32,7 +32,7 @@ async def approval_node(state: AgentState, deps: Deps) -> dict:
         # ⚠️ interrupt() 앞에는 부작용(저장·외부 호출)을 두지 않는다 — 재개 때 이 노드가 처음부터 다시 실행된다
         decision = interrupt({"type": "ApprovalRequired", "actions": [{
             "action": "예산 변경",
-            "sentence": f"{change['category']} 예산 {won(change['before']) if change['before'] else '-'}"
+            "sentence": f"{change['category']} 예산 {won(change['before']) if change['before'] is not None else '-'}"
                         f" → {won(change['after'])}"}], "draft": state["draft"]})
         approved, comment = bool(decision.get("approved")), decision.get("comment", "")
     else:

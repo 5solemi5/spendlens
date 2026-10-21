@@ -15,6 +15,7 @@ from mcp import ClientSession, StdioServerParameters
 from mcp.client.stdio import stdio_client
 
 SERVER_SCRIPT = Path(__file__).resolve().parent.parent / "mcp_server.py"
+CALL_TIMEOUT = float(os.environ.get("MCP_CALL_TIMEOUT", "30"))   # 넘으면 asyncio.TimeoutError → with_retry가 재시도
 
 
 class MCPClient:
@@ -22,7 +23,9 @@ class MCPClient:
         self._script = server_script
         self._stack: AsyncExitStack | None = None
         self.session: ClientSession | None = None
-        self._lock = asyncio.Lock()   # stdio 하나를 여러 요청이 동시에 쓰지 않게
+        # stdio 하나를 여러 요청이 동시에 쓰지 않게. 그래서 research의 '병렬' 호출도 MCP 앞에서는 차례로 처리된다
+        # (계산이 밀리초 단위라 체감 차이는 없다 — 원격 MCP 서버라면 세션을 여러 개 두는 편이 낫다)
+        self._lock = asyncio.Lock()
 
     async def start(self) -> None:
         self._stack = AsyncExitStack()
@@ -39,9 +42,14 @@ class MCPClient:
 
     @traceable(run_type="tool", name="mcp.call_tool")
     async def call_tool(self, name: str, arguments: dict) -> dict:
+        # 시간 제한이 없으면 서버가 멈췄을 때 영원히 기다리고, with_retry(TimeoutError만 재시도)도 동작할 기회가 없다
         async with self._lock:
-            result = await self.session.call_tool(name, arguments)
-        if getattr(result, "isError", False) or getattr(result, "is_error", False):
+            result = await asyncio.wait_for(self.session.call_tool(name, arguments), CALL_TIMEOUT)
+        # SDK 버전에 따라 필드 이름이 다르다(2.x: is_error, 1.x: isError). 새 이름을 먼저 본다
+        is_error = getattr(result, "is_error", None)
+        if is_error is None:
+            is_error = getattr(result, "isError", False)
+        if is_error:
             raise ValueError(result.content[0].text)
         return json.loads(result.content[0].text)
 

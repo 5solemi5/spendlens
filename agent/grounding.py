@@ -4,9 +4,10 @@
 모델이 두 카테고리를 직접 더하거나, 반올림을 틀리거나, 다른 달 금액을 섞으면 여기서 걸린다.
 
 허용 규칙:
-  - 금액: 사실에 있는 금액과 정확히 같아야 한다. 줄여 쓴 표현만 그 표현의 정밀도만큼 허용한다.
-          "33만 원" → ±10,000원, "33.4만 원" → ±1,000원, "약 333,000원" → ±1%.
-          (처음엔 모두 ±1%로 했더니 333,700원을 "약 33만 원"이라고 쓴 정상 답이 걸렸다)
+  - 금액: 사실에 있는 금액과 정확히 같아야 한다. 줄여 쓴 표현은 '올바른 반올림'일 때만 허용한다.
+          "33만 원" → ±5,000원, "33.4만 원" → ±500원, "약 330,000원" → ±5,000원, "약 333,000원" → ±1%.
+          (처음엔 모두 ±1%로 했더니 333,700원을 "약 33만 원"이라고 쓴 정상 답이 걸렸고, 그다음 ±10,000원으로
+           넓혔더니 리뷰에서 "34만 원"(틀린 반올림)도 통과한다는 지적을 받았다)
   - 비율(%): 사실의 비율과 0.1 이내.
   - 건수(번·건·회·개): 사실에 있는 정수.
 날짜("14일", "9/14")와 달("9월")은 검사하지 않는다.
@@ -17,7 +18,9 @@ WON = re.compile(r"(?P<approx>약|대략|거의)?\s*(?:(?P<man>\d+(?:\.\d+)?)\s*
                  r"(?P<full>\d{1,3}(?:,\d{3})+|\d+))\s*원(?P<suffix>\s*(?:정도|쯤|가량))?")
 PERCENT = re.compile(r"(\d+(?:\.\d+)?)\s*%")
 COUNT = re.compile(r"(\d+)\s*(?:번|건|회|개)(?![월일])")
-NUM = re.compile(r"\d+(?:\.\d+)?")
+# 사실 텍스트의 날짜·월은 '수치'가 아니다 — 지우고 숫자를 모은다
+# (리뷰에서 발견: "2026-09"의 9·2026이 허용 숫자가 되어, 지어낸 "9건"이나 "약 1만 원"이 통과했다)
+DATE_LIKE = re.compile(r"\d{4}-\d{2}(?:-\d{2})?|\d{1,2}/\d{1,2}|\d{1,2}일")
 
 
 def parse_won(m: re.Match) -> tuple[int, float]:
@@ -29,15 +32,19 @@ def parse_won(m: re.Match) -> tuple[int, float]:
         if m.group("rest") is not None:              # "33만 3,700원" → 정확한 금액
             return value, value * 0.01 if approx else 0
         decimals = len(man.split(".")[1]) if "." in man else 0
-        return value, 10_000 / 10 ** decimals      # "33만" ±10,000 / "33.4만" ±1,000
+        return value, 5_000 / 10 ** decimals       # 반올림 기준: "33만" ±5,000 / "33.4만" ±500
     value = int(m.group("full").replace(",", ""))
-    return value, value * 0.01 if approx else 0
+    if not approx:
+        return value, 0
+    # "약 330,000원"처럼 끝자리를 0으로 맞춘 근사치는 반올림 단위의 절반만큼 허용(→ "약 33만 원"과 같은 기준)
+    zeros = len(str(value)) - len(str(value).rstrip("0"))
+    return value, max(value * 0.01, 10 ** zeros / 2 if zeros >= 3 else 0)
 
 
 def fact_numbers(facts_text: str) -> tuple[set[int], set[float]]:
     """사실 텍스트의 모든 숫자 → (정수 집합, 실수 집합)."""
     ints, floats = set(), set()
-    for raw in re.findall(r"\d{1,3}(?:,\d{3})+|\d+(?:\.\d+)?", facts_text):
+    for raw in re.findall(r"\d{1,3}(?:,\d{3})+|\d+(?:\.\d+)?", DATE_LIKE.sub(" ", facts_text)):
         v = float(raw.replace(",", ""))
         floats.add(v)
         if v.is_integer():

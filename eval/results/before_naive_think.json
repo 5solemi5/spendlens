@@ -1,0 +1,84 @@
+{
+ "label": "before_naive_think",
+ "model": "qwen3:8b",
+ "think": true,
+ "summary": {
+  "queries": 4,
+  "accuracy": "2/4",
+  "answers_with_invented_amounts": 1,
+  "false_action_claims": 0,
+  "total_s": 1368.5,
+  "avg_s": 342.1,
+  "prompt_tokens": 43835,
+  "cost_usd": 0.335035
+ },
+ "rows": [
+  {
+   "id": 1,
+   "query": "9월 식비 얼마 썼어?",
+   "kind": "합계",
+   "elapsed_s": 336.1,
+   "prompt_tokens": 10959,
+   "cost_usd": 0.084535,
+   "reply": "9월 식비 총액은 **407,900 원**입니다.",
+   "ok": false,
+   "checks": [
+    false
+   ],
+   "invented": [
+    407900
+   ],
+   "false_action": false
+  },
+  {
+   "id": 2,
+   "query": "9월에 카페 몇 번 갔어?",
+   "kind": "건수",
+   "elapsed_s": 187.3,
+   "prompt_tokens": 10961,
+   "cost_usd": 0.068655,
+   "reply": "9월에 카페를 총 **18번** 갔습니다.  \n\n**세부 내역:**  \n- 스타벅스: 7회  \n- 메가커피: 5회  \n- 투썸플레이스: 2회  \n- 블루보틀 성수: 1회  \n- 클라이밍파크 신림: 1회 (카페로 분류)  \n- 기타: 2회 (예: 투썸플레이스, 메가커피 등)  \n\n(참고: '클라이밍파크 신림'은 운동장소로 분류되나, 사용자의 카페 범주에 포함된 것으로 판단하여 카페로 계산했습니다.)",
+   "ok": true,
+   "checks": [
+    true
+   ],
+   "invented": [],
+   "false_action": false
+  },
+  {
+   "id": 5,
+   "query": "9월 전체 지출 합계는?",
+   "kind": "합계",
+   "elapsed_s": 337.0,
+   "prompt_tokens": 10958,
+   "cost_usd": 0.08406,
+   "reply": "9월 전체 지출 합계는 **1,811,280 원**입니다.",
+   "ok": true,
+   "checks": [
+    true
+   ],
+   "invented": [],
+   "false_action": false
+  },
+  {
+   "id": 6,
+   "query": "9월에 이상한 결제 있어?",
+   "kind": "이상 결제",
+   "elapsed_s": 508.1,
+   "prompt_tokens": 10957,
+   "cost_usd": 0.097785,
+   "reply": "9월에 이상한 결제로 의심되는 항목은 다음과 같습니다:\n\n1. **무신사 (T0235)**: 389,000원 (쇼핑 예산 150,000원을 크게 초과).  \n2. **AMAZON.COM (T0250)**: 152,300원 (쇼핑 예산 초과).  \n3. **장보기 (T0264)**: 이마트 구매 54,800원으로, 장보기 예산 150,000원을 약 162,500원으로 초과.  \n\n이 중 가장 눈에 띄는 것은 **T0235**와 **T0250**의 대규모 쇼핑 결제입니다. 추가로 장보기 항목도 예산을 초과한 것으로 보입니다.",
+   "ok": false,
+   "checks": [
+    false,
+    true,
+    true,
+    false,
+    true,
+    true
+   ],
+   "invented": [],
+   "false_action": false
+  }
+ ]
+}

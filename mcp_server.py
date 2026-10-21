@@ -93,8 +93,10 @@ def set_budget(category: str, amount: int) -> dict:
 @mcp.resource("guide://saving/{topic}")
 def saving_guide(topic: str) -> str:
     """주제(카테고리 또는 '이상결제')별 절약·대응 가이드."""
+    # 가이드 폴더에 실제로 있는 이름만 허용 — "../../README" 같은 경로로 폴더 밖 파일을 읽지 못하게
+    allowed = {p.stem for p in GUIDE_DIR.glob("*.md")}
     path = GUIDE_DIR / f"{topic}.md"
-    if not path.exists():
+    if topic not in allowed:
         return f"# Guide Not Found\n\n{topic}에 대한 가이드가 없습니다."
     return path.read_text(encoding="utf-8")
 

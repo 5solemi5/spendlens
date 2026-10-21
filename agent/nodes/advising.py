@@ -30,9 +30,11 @@ def hints_from_facts(facts: list[dict], category: str | None) -> list[str]:
 async def advise_node(state: AgentState, deps: Deps) -> dict:
     """절약 방법을 물었거나, 예산 초과·이상 결제가 있으면 관련 가이드를 붙인다."""
     hints = hints_from_facts(state.get("facts", []), state.get("category"))
-    wants = "advice" in state["intents"] or any(i in state["intents"] for i in ("budget", "anomaly", "subscription"))
-    if not wants or not (hints or "advice" in state["intents"]):
+    asked = "advice" in state["intents"]
+    has_problem = bool(hints) and any(i in state["intents"] for i in ("budget", "anomaly", "subscription"))
+    if not asked and not has_problem:
         return {"guides": [], "events": state["events"] + [{"type": "AdviceSkipped"}]}
-    guides = await asyncio.to_thread(RETRIEVER.retrieve, state["query"], hints)
+    # 주제 3개까지 — 예산 초과가 5개여도 상위 3개만 붙여 답변이 가이드로 길어지지 않게
+    guides = await asyncio.to_thread(RETRIEVER.retrieve, state["query"], hints, 3)
     return {"guides": guides, "events": state["events"] + [
         {"type": "GuidesRetrieved", "topics": [g["topic"] for g in guides], "hints": hints}]}

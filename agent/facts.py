@@ -32,7 +32,8 @@ def _compare(args: dict, r: dict) -> str:
 def _transactions(args: dict, r: dict) -> str:
     items = ", ".join(f"{t['date'][5:].replace('-', '/')} {t['merchant']} {won(t['amount'])}"
                       for t in r["transactions"])
-    return f"- 결제 목록(금액 큰 순, {r['count']}건): {items or '없음'}"
+    more = f", 전체 {r['count']}건 중 큰 순 {r['shown']}건" if r["count"] > r["shown"] else f", {r['count']}건"
+    return f"- 결제 목록(금액 큰 순{more}): {items or '없음'}"
 
 
 def _anomalies(args: dict, r: dict) -> str:

@@ -138,9 +138,10 @@ def compare_months(month_a: str, month_b: str) -> dict:
 
 def list_transactions(month=None, category=None, merchant=None, limit: int = 20) -> dict:
     rows = _filter(load_transactions(), month, category, merchant)
-    rows = sorted(rows, key=lambda r: -r["amount"])[:limit]
+    top = sorted(rows, key=lambda r: -r["amount"])[:limit]
     keep = ("id", "date", "time", "merchant", "amount", "category", "overseas")
-    return {"count": len(rows), "transactions": [{k: r[k] for k in keep} for r in rows]}
+    # count = 조건에 맞는 전체 건수, shown = 실제로 보여 준 건수 (처음엔 limit으로 자른 뒤 세서 "10건"이 됐다)
+    return {"count": len(rows), "shown": len(top), "transactions": [{k: r[k] for k in keep} for r in top]}
 
 
 # ---------------------------------------------------------------- 이상 결제·구독
@@ -212,13 +213,15 @@ def find_subscriptions() -> dict:
         if len(per_month) < 2 or any(len(v) != 1 for v in per_month.values()):
             continue
         days = [int(v[0]["date"][8:]) for v in per_month.values()]
-        if max(days) - min(days) > 3:
+        # 결제일 차이는 '달력을 한 바퀴 도는' 거리로 잰다 — 30일과 1일은 29일이 아니라 2일 차이
+        if max(min(abs(a - b), 31 - abs(a - b)) for a in days for b in days) > 3:
             continue
         amounts = [v[0]["amount"] for v in per_month.values()]
         if max(amounts) / min(amounts) > SUBSCRIPTION_MAX_RATIO:   # 금액이 들쭉날쭉하면 정기 결제가 아니다
             continue
         history = [{"month": m, "amount": per_month[m][0]["amount"]} for m in sorted(per_month)]
-        sub = {"merchant": merchant, "category": rs[0]["category"], "day": days[-1],
+        sub = {"merchant": merchant, "category": rs[0]["category"],
+               "day": int(per_month[max(per_month)][0]["date"][8:]),   # 가장 최근 달의 결제일
                "amount": history[-1]["amount"], "months": [h["month"] for h in history],
                "active": latest in per_month}
         if history[-1]["amount"] != history[-2]["amount"]:
@@ -247,8 +250,8 @@ def budget_status(month: str) -> dict:
     for cat, limit in budget.items():
         used = spent.get(cat, 0)
         items.append({"category": cat, "budget": limit, "spent": used, "remaining": limit - used,
-                      "used_pct": round(used / limit * 100, 1), "over": used > limit})
-    items.sort(key=lambda x: -x["used_pct"])
+                      "used_pct": round(used / limit * 100, 1) if limit else None, "over": used > limit})
+    items.sort(key=lambda x: -(x["used_pct"] or 0))
     return {"month": month, "over_count": sum(i["over"] for i in items),
             "over": [i for i in items if i["over"]], "items": items}
 

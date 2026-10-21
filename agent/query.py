@@ -18,11 +18,11 @@ CATEGORY_ALIASES: list[tuple[str, str]] = [
     (r"구독|넷플릭스|netflix|유튜브 ?프리미엄|스포티파이|멤버십|정기 ?결제", "구독"),
     (r"식비|밥값|식사|외식|배달|점심|저녁|야식|먹는 데", "식비"),
     (r"카페|커피|스타벅스|음료", "카페"),
+    (r"통신|휴대폰|핸드폰|스마트폰|폰 ?요금", "통신"),   # 장보기보다 먼저: "스마트폰"의 '마트'
     (r"장보기|마트|편의점|생활비", "장보기"),
     (r"교통|택시|지하철|버스|대중교통|쏘카", "교통"),
     (r"쇼핑|옷|쿠팡|무신사|올리브영|직구", "쇼핑"),
-    (r"통신|휴대폰|핸드폰|폰 ?요금", "통신"),
-    (r"문화|여가|영화|책|운동|클라이밍", "문화"),
+    (r"문화|여가|영화|도서|서점|책(?![임상])|운동|클라이밍", "문화"),   # "책임·책상"은 책이 아니다
     (r"의료|병원|약국", "의료"),
 ]
 
@@ -38,7 +38,7 @@ INTENT_PATTERNS: dict[str, str] = {
 }
 BUDGET_CHANGE = re.compile(r"예산[^.?!]{0,20}?(바꿔|변경|올려|내려|설정|수정|으로 해|로 해|로 잡아|조정)")
 OUT_OF_SCOPE = re.compile(r"주식|코인|비트코인|이더리움|투자|대출|펀드|ETF|재테크|부동산")
-AMOUNT = re.compile(r"(\d+(?:\.\d+)?)\s*만\s*원?|(\d{1,3}(?:,\d{3})+|\d+)\s*원")
+AMOUNT = re.compile(r"(\d+(?:\.\d+)?)\s*만\s*(?:(\d+)\s*천)?\s*원?|(\d+)\s*천\s*원|(\d{1,3}(?:,\d{3})+|\d+)\s*원")
 
 
 def month_shift(month: str, delta: int) -> str:
@@ -62,19 +62,21 @@ def parse_months(text: str) -> list[str]:
             found.append((m.start(), f"{YEAR}-{int(m.group(1)):02d}"))
     for m in re.finditer(r"이번 ?달|이달", text):
         found.append((m.start(), REF_MONTH))
-    for m in re.finditer(r"지난 ?달|저번 ?달|전 ?달", text):
+    for m in re.finditer(r"지난 ?달|저번 ?달|전 ?달(?![하해했되받])", text):   # "전달해줘"(동사)는 제외
         found.append((m.start(), month_shift(REF_MONTH, -1)))
     return list(dict.fromkeys(mo for _, mo in sorted(found)))
 
 
 def parse_amount(text: str) -> int | None:
-    """'50만원' → 500000, '450,000원' → 450000. 금액이 없으면 None."""
+    """'50만원' → 500000, '3만 5천원' → 35000, '5천원' → 5000, '450,000원' → 450000. 없으면 None."""
     m = AMOUNT.search(text)
     if not m:
         return None
     if m.group(1):
-        return int(round(float(m.group(1)) * 10_000))
-    return int(m.group(2).replace(",", ""))
+        return int(round(float(m.group(1)) * 10_000)) + int(m.group(2) or 0) * 1_000
+    if m.group(3):
+        return int(m.group(3)) * 1_000
+    return int(m.group(4).replace(",", ""))
 
 
 def find_category(text: str) -> str | None:
@@ -110,7 +112,8 @@ def parse_query(text: str, merchants: list[str]) -> dict:
     if "compare" in intents and len(months) == 1:
         months = [month_shift(months[0], -1), months[0]]   # "9월 늘었어?" → [8월, 9월]
     elif "compare" in intents and len(months) >= 2:
-        months = sorted(months[:2])   # "9월이 전달보다" → 말한 순서와 상관없이 [이전 달, 나중 달]
+        months = sorted(months)
+        months = [months[0], months[-1]]   # 순서와 상관없이 [가장 이른 달, 가장 늦은 달] ("7월 8월 9월 비교" → 7·9월)
     return {"months": months, "category": category, "merchant": find_merchant(text, merchants),
             "intents": intents, "budget_change": budget_change, "all_period": all_period,
             "out_of_scope": bool(OUT_OF_SCOPE.search(text))}

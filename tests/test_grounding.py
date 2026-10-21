@@ -17,3 +17,12 @@ def test_grounded(draft):
                                         ("약 340,000원", "약 340,000원"), ("500%", "500%"), ("23건", "23건")])
 def test_ungrounded(draft, bad):
     assert check_amounts(draft, FACTS) == [bad]
+
+
+def test_review_fixes():
+    # 날짜 속 숫자(2026, 09)는 사실 수치가 아니다
+    assert check_amounts("9건 있어요", "- 2026-09 식비 지출: 합계 333,700원, 22건") == ["9건"]
+    # 반올림이 맞으면 통과, 틀린 반올림은 반려
+    facts = "- 합계 333,700원"
+    assert check_amounts("약 330,000원", facts) == [] and check_amounts("33만 원", facts) == []
+    assert check_amounts("34만 원", facts) == ["34만 원"]

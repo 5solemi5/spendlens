@@ -56,3 +56,18 @@ def test_out_of_scope_and_chat():
     assert q("비트코인 사도 될까?")["out_of_scope"]
     assert not is_spending_question(q("안녕, 너는 누구야?"))
     assert is_spending_question(q("9월 카페 몇 번 갔어?"))
+
+
+def test_review_fixes():
+    from agent.query import find_category
+    assert find_category("스마트폰 요금 얼마야") == "통신"          # '스마트폰'의 '마트'를 장보기로 읽지 않음
+    assert find_category("책임감 있게 쓰자") is None and find_category("책 값") == "문화"
+    assert parse_months("9월 카드 내역 전달해줘") == ["2026-09"]      # 동사 '전달하다'는 지난달이 아님
+    assert parse_amount("3만 5천원") == 35000 and parse_amount("5천원") == 5000
+    assert q("7월 8월 9월 비교해줘")["months"] == ["2026-07", "2026-09"]
+    assert q("9월이 지난달보다 늘었어?")["months"] == ["2026-08", "2026-09"]
+
+
+def test_compare_single_month_branch():
+    # 달이 하나만 나오는 비교 → 직전 달과 비교 (리뷰: 기존 테스트는 '전달'을 두 번째 달로 읽어 이 분기를 안 탔다)
+    assert q("9월에 많이 늘었어?")["months"] == ["2026-08", "2026-09"]

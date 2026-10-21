@@ -72,13 +72,13 @@ async def plan_node(state: AgentState, deps: Deps) -> dict:
         month = REF_MONTH   # "이상한 결제 있어?"처럼 달이 없으면 기준 달(이번 달)
     if "budget_change" in intents:
         month = REF_MONTH   # 예산 변경 제안에는 '이번 달' 사용액을 함께 보여 준다
-    missing = [m for m in months + ([month] if month else []) if m not in available]
+    missing = list(dict.fromkeys(m for m in months + ([month] if month else []) if m not in available))
 
     base = {"intents": intents, "months": months, "month": month, "category": parsed["category"],
             "merchant": parsed["merchant"], "budget_change": parsed["budget_change"], **usage_update}
     if missing:
         events.append({"type": "PlanCreated", "intents": intents, "missing_months": missing})
-        return {**base, "missing_months": list(dict.fromkeys(missing)), "calls": [], "events": events}
+        return {**base, "missing_months": missing, "calls": [], "events": events}
     bc = parsed["budget_change"]
     if bc and (not bc["category"] or not bc["amount"]):
         what = "어느 카테고리" if not bc["category"] else "얼마로"
