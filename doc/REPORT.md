@@ -41,9 +41,23 @@ route ─┬─ chat_answer                       잡담 (요약 메모리로 �
 | 서빙 | FastAPI(SSE 스트리밍, 승인 API, 체크포인트 정리), Vue 채팅 화면 | `server.py`, `web_chat.html` |
 | 의존성 주입·테스트 | `Deps` + `functools.partial`. pytest 71개(LLM·Ollama 없이 실행) | `agent/deps.py`, `tests/` |
 
+## 2-1. 실행 화면 (qwen3:0.6b + qwen3:8b, 실제 실행)
+
+![그래프](images/00_graph.png)
+
+| 기능 | 화면 |
+|---|---|
+| 지출 질의 + 미분류 가맹점 자동 분류 | ![9월 식비](images/01_spending.png) |
+| 이상 결제 탐지(중복·고액·해외) | ![이상 결제](images/02_anomaly.png) |
+| 예산 초과 + 절약 가이드 RAG | ![예산 코칭](images/03_budget_rag.png) |
+| 예산 변경 사람 승인(HITL) | ![승인](images/04_hitl_approved.png) |
+| 범위 밖 질문 거절 · 데이터 없는 달 안내 | ![안전장치](images/05_safety.png) |
+
 ## 3. Before / After
 
-같은 질문 12개, 같은 채점 규칙(`eval/score.py`)으로 비교했다. 정답은 에이전트 코드와 독립된 계산기(`eval/expected.py`)가 CSV에서 따로 계산한다.
+같은 질문 12개, 같은 채점 규칙(`eval/score.py`)으로 비교했다.
+
+![Before/After 실행 결과](images/06_before_after.png) 정답은 에이전트 코드와 독립된 계산기(`eval/expected.py`)가 CSV에서 따로 계산한다.
 
 - **Before:** 나이브 방식. CSV 전체를 qwen3:8b에 넣는다.
 - **After:** SpendLens. 0.6b가 라우팅·잡담을 맡고, 8b가 답변 작성·가맹점 분류를 맡는다.
