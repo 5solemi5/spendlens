@@ -47,10 +47,11 @@ def main():
                                                                 "comment": "bench 자동 승인"}, timeout=600).json()
         elapsed = round(time.perf_counter() - t0, 1)
         meta = res.get("metadata", {})
-        s = score(case, exps[case["id"]], res["reply"], ledger.load_budget(), truth)
+        budget_after = ledger.load_budget()
+        s = score(case, exps[case["id"]], res["reply"], budget_after, truth)
         rows.append({"id": case["id"], "query": case["query"], "kind": case["kind"], "elapsed_s": elapsed,
                      "cost_usd": meta.get("cost_usd", 0.0), "prompt_tokens": meta.get("prompt_tokens", 0),
-                     "approval": approval, "reply": res["reply"],
+                     "approval": approval, "budget_after": budget_after, "reply": res["reply"],
                      "metadata": meta, "events": res.get("events", []), **s})
         print(f"[{elapsed:>6}s] #{case['id']} {'O' if s['ok'] else 'X'} invented={s['invented'][:3]} "
               f"route={meta.get('route')} tools={meta.get('tools')} {res['reply'].strip()[:50]!r}", flush=True)

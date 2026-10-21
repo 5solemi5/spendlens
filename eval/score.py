@@ -27,6 +27,8 @@ def score(case: dict, exp: dict, reply: str, budget_after: dict | None, true_num
     checks = []
     for a in exp.get("amounts", []):
         checks.append(has_amount(reply, a))
+    for options in exp.get("amounts_any", []):     # 묶음마다 금액 중 하나라도 있으면 됨
+        checks.append(any(has_amount(reply, a) for a in options))
     for c in exp.get("counts", []):
         checks.append(c in [int(m.group(1)) for m in COUNT.finditer(reply)])
     for w in exp.get("words", []):

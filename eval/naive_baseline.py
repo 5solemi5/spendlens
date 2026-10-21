@@ -18,6 +18,8 @@ sys.path.insert(0, str(HERE))
 import expected   # noqa: E402
 from score import score, summarize   # noqa: E402
 
+import httpx   # noqa: E402
+
 from agent.ollama_llm import OllamaLLM   # noqa: E402
 
 SYSTEM = ("당신은 개인 가계부 비서다. 아래 카드 내역(CSV)과 카테고리별 월 예산을 보고 사용자의 질문에 "
@@ -29,6 +31,7 @@ def main():
     ap.add_argument("--model", default="qwen3:8b")
     ap.add_argument("--think", action="store_true", help="qwen3 thinking 켜기(느리지만 계산이 나아지는지 확인용)")
     ap.add_argument("--label", default="before_naive")
+    ap.add_argument("--ids", help="일부 질문만 (예: 1,2,5,6) — thinking 모드처럼 느릴 때")
     args = ap.parse_args()
 
     csv_text = (HERE.parent / "data" / "transactions.csv").read_text(encoding="utf-8")
@@ -36,10 +39,16 @@ def main():
     llm = OllamaLLM(args.model, usd_per_1k_tokens=0.005, think=args.think, num_ctx=16384)
     exps, truth = expected.expectations(), expected.all_true_numbers()
     rows = []
+    ids = {int(i) for i in args.ids.split(",")} if args.ids else None
     for case in json.loads((HERE / "queries.json").read_text(encoding="utf-8")):
+        if ids and case["id"] not in ids:
+            continue
         user = f"## 카드 내역\n{csv_text}\n## 카테고리별 월 예산(원)\n{budget}\n\n## 질문\n{case['query']}"
         t0 = time.perf_counter()
-        reply, usage = llm._chat(SYSTEM, user)
+        try:
+            reply, usage = llm._chat(SYSTEM, user)
+        except httpx.TimeoutException:   # 시간 초과도 결과로 남긴다(답을 못 한 것 = 오답)
+            reply, usage = "[시간 초과]", {"prompt_tokens": 0, "usd": 0.0}
         elapsed = round(time.perf_counter() - t0, 1)
         s = score(case, exps[case["id"]], reply, expected.budget(), truth)   # 나이브는 예산을 바꿀 수단이 없다
         rows.append({"id": case["id"], "query": case["query"], "kind": case["kind"], "elapsed_s": elapsed,

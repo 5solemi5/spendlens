@@ -104,6 +104,9 @@ def expectations() -> dict[int, dict]:
     aug, sepc = by_category("2026-08"), by_category(sep)
     top = max(sepc, key=lambda c: sepc[c] - aug.get(c, 0))
     over = sorted(c for c, lim in budget().items() if sepc.get(c, 0) > lim)
+    # 초과 카테고리마다 '실제 지출' 또는 '초과액' 중 하나가 답에 있어야 한다
+    # (처음엔 카테고리 이름만 봤더니, 모든 카테고리를 나열한 나이브 답이 통과했다)
+    over_amounts = [[sepc[c], sepc[c] - budget()[c]] for c in over]
     return {
         1: {"amounts": [food]},
         2: {"counts": [cafe_n]},
@@ -112,7 +115,7 @@ def expectations() -> dict[int, dict]:
         5: {"amounts": [sum(sepc.values())]},
         6: {"words": ["배달의민족", "무신사", "AMAZON"], "amounts": [27500, 389000, 152300]},
         7: {"amounts": [subscription_total(), 17000], "words": ["NETFLIX"]},
-        8: {"words": over},
+        8: {"words": over, "amounts_any": over_amounts},
         9: {"no_amounts": True, "words_any": ["없", "확인되지", "알 수 없"]},
         10: {"refuse": True},
         11: {"chat": True},
