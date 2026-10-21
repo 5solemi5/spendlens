@@ -183,9 +183,9 @@ def detect_anomalies(month: str) -> dict:
                           "date": r["date"], "ids": [r["id"]], "reason": "해외 가맹점 결제"})
     # 같은 결제가 여러 기준에 걸리면(예: AMAZON — 큰 결제 + 해외 결제) 한 항목으로 묶는다.
     # 처음엔 기준마다 따로 냈더니 '이상 결제 4건'이 되어, 모델이 맞게 쓴 "3건"이 근거 없는 숫자로 반려됐다.
-    merged: dict[tuple, dict] = {}
+    merged: dict[str, dict] = {}
     for a in found:
-        key = tuple(a["ids"])
+        key = a["ids"][-1]   # '문제가 된 그 결제'(중복이면 두 번째 결제) 기준 — 중복이면서 고액인 결제도 한 항목
         if key in merged:
             merged[key]["type"] += " + " + a["type"]
             merged[key]["reason"] += " / " + a["reason"]

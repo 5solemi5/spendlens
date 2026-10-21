@@ -6,6 +6,7 @@ web_chat.html 한 장을 같은 출처(origin)로 띄우고, /chat·/chat/stream
 실행:
     python3 web_demo_server.py        # http://localhost:8700 에서 채팅 화면
 """
+import json
 import os
 from pathlib import Path
 
@@ -69,14 +70,25 @@ async def proxy_approve(req: Request):   # 승인/거절 (JSON)
 
 @app.get("/chat/approve/stream")
 async def proxy_approve_stream(thread_id: str, approved: bool, comment: str = ""):
+    """백엔드의 상태 코드를 그대로 전달한다 — 승인 대기가 없으면(404) 화면이 '연결 끊김'이 아니라
+    실제 이유를 보여 줄 수 있게. (처음엔 무조건 200 스트림으로 감싸서 404가 빈 스트림이 됐다)"""
+    client = httpx.AsyncClient(timeout=None)
+    upstream = await client.send(client.build_request(
+        "GET", f"{BACKEND}/chat/approve/stream",
+        params={"thread_id": thread_id, "approved": str(approved).lower(), "comment": comment}), stream=True)
+    if upstream.status_code != 200:
+        body = await upstream.aread()
+        await upstream.aclose()
+        await client.aclose()
+        return JSONResponse(json.loads(body or b"{}"), status_code=upstream.status_code)
+
     async def relay():
-        async with httpx.AsyncClient(timeout=None) as client:
-            async with client.stream(
-                "GET", f"{BACKEND}/chat/approve/stream",
-                params={"thread_id": thread_id, "approved": str(approved).lower(), "comment": comment},
-            ) as upstream:
-                async for chunk in upstream.aiter_bytes():
-                    yield chunk
+        try:
+            async for chunk in upstream.aiter_bytes():
+                yield chunk
+        finally:
+            await upstream.aclose()
+            await client.aclose()
 
     return StreamingResponse(relay(), media_type="text/event-stream")
 

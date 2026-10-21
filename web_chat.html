@@ -239,7 +239,7 @@ createApp({
         }
 
         if (e.type === 'ApprovalRequired') {   // 그래프가 멈췄다 → 승인 카드 표시
-          // 토큰으로 흘러나온 초안은 아직 확정 답변이 아니다 — 사용자가 착각하지 않게 표시
+          // (예산 변경 제안문은 코드가 쓰고 토큰으로 흘려보내지 않으므로, 승인 전에 확정 답처럼 보이는 말풍선이 없다)
           log.value.push(reactive({ id: nextId++, kind: 'approval', actions: e.actions, decided: null }));
           stepsItem.steps.push('예산 변경 → 승인 대기');
           scrollToBottom();

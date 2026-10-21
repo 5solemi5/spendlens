@@ -18,7 +18,11 @@ def main():
     for key, name in LABELS:
         print(f"| {name} | {a['summary'].get(key, '-')} | {b['summary'].get(key, '-')} |")
     print(f"\n| # | 유형 | 질문 | {a['label']} | {b['label']} |\n|---|---|---|---|---|")
-    for ra, rb in zip(a["rows"], b["rows"]):
+    by_id = {r["id"]: r for r in b["rows"]}
+    for ra in a["rows"]:   # id로 짝짓기 — 한쪽을 --ids로 일부만 돌렸어도 어긋나지 않게
+        if ra["id"] not in by_id:
+            continue
+        rb = by_id[ra["id"]]
         cell = lambda r: ("O" if r["ok"] else "X") + (f" (지어낸 금액 {', '.join(f'{v:,}' for v in r['invented'][:2])})"
                                                       if r["invented"] else "") + (" (거짓 실행)" if r["false_action"] else "")
         print(f"| {ra['id']} | {ra['kind']} | {ra['query'][:24]} | {cell(ra)} | {cell(rb)} |")
