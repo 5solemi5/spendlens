@@ -1,4 +1,4 @@
-"""categorize(미분류 가맹점 LLM 분류) · research(MCP Tool 병렬 호출) 노드."""
+"""categorize(미분류 가맹점 LLM 분류) · research(MCP Tool 호출 — 함께 보내지만 MCP 세션 Lock 때문에 차례로 처리) 노드."""
 import asyncio
 
 from langsmith import traceable
@@ -30,7 +30,9 @@ async def categorize_node(state: AgentState, deps: Deps) -> dict:
 
 @traceable(name="research_node")
 async def research_node(state: AgentState, deps: Deps) -> dict:
-    """조회 계획(calls)을 MCP Tool로 병렬 실행. 숫자는 전부 여기서 나온다."""
+    """조회 계획(calls)을 MCP Tool로 실행. 숫자는 전부 여기서 나온다.
+    asyncio.gather로 함께 보내지만, mcp_client가 stdio 세션 하나를 asyncio.Lock으로 지키므로
+    MCP 서버는 한 번에 하나씩 처리한다."""
     async def one(call):
         result, retries = await with_retry(deps.mcp.call_tool, call["tool"], call["args"])
         return {**call, "result": result, "retries": retries}

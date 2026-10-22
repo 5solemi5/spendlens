@@ -12,7 +12,7 @@
 
 요약본 = [사용자 정보](코드가 정규식으로 뽑아 고정) + [대화 요약](LLM).
 과제1에서 처음엔 전부 LLM에 맡겼는데, qwen3:0.6b가 "민수님, 결제팀입니다. CPU 91%로…"처럼 이름·소속을 다른
-내용과 한 문장에 뭉개서, 요약을 받은 모델이 "어느 팀이라고 했죠?"에 답하지 못했다(실측 1/2).
+내용과 한 문장에 뭉개서, 요약을 받은 모델이 "어느 팀이라고 했죠?"에 답하지 못했다(과제1 실측 1/2).
 이름·소속처럼 '틀리면 안 되는 사실'은 코드가 뽑아 별도 줄로 고정한다(W6 정신 — 결정은 코드가).
 """
 import asyncio
@@ -49,7 +49,7 @@ MAX_NOTE_LINES = 5
 
 
 def compose_summary(profile: dict, notes: str) -> str:
-    """요약 줄 수 상한은 코드가 지킨다 — 0.6b는 '5줄 이내' 지시를 무시하고 9줄을 냈다(실측)."""
+    """요약 줄 수 상한은 코드가 지킨다 — 0.6b는 '5줄 이내' 지시를 무시하고 9줄을 냈다(과제1 실측)."""
     lines = [PROFILE_HEADER] + [f"- {k}: {v}" for k, v in profile.items()] if profile else []
     note_lines = [l.strip() for l in notes.splitlines() if l.strip()][:MAX_NOTE_LINES]
     return "\n".join(lines + [NOTES_HEADER] + note_lines).strip()
