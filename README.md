@@ -51,7 +51,7 @@ bash sh/run_frontend.sh                     # 채팅 화면 http://localhost:870
 - `LLM_BACKEND`: `fake`(기본, 네트워크 없음) · `ollama` · `openai`(과금)
 - `HITL_APPROVAL=0`: 예산 변경을 자동 승인
 - **포트:** 백엔드 8200, 화면 8700. 이미 쓰고 있으면 아무것도 끄지 않고 다른 포트를 안내한다.
-- **데이터:** `data/transactions.csv`는 `scripts/make_data.py`가 고정 시드로 만든 가상 내역이다(2026-07~09, 268건). 실행 중 바뀌는 값(LLM 분류, 승인된 예산)은 `data/runtime/`에 저장되고 git에는 올라가지 않는다.
+- **데이터:** `data/transactions.csv`는 `scripts/make_data.py`가 고정 시드로 만든 가상 내역이다(2026-07\~09, 268건). 실행 중 바뀌는 값(LLM 분류, 승인된 예산)은 `data/runtime/`에 저장되고 git에는 올라가지 않는다.
 
 ## 측정
 
